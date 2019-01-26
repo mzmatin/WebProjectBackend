@@ -36,7 +36,7 @@ class PlayerPage extends React.Component {
         const information = this.getInformation(this.props.playerCode);
         const name = this.getPlayerName(this.props.playerCode);
         const address = this.getAddress(this.props.playerCode);
-        const stat = this.getStat(1);
+        const stat = this.getStat(this.props.playerCode);
         const newsList = this.getRelatedPlayerNews(this.props.playerCode);
         return (
 

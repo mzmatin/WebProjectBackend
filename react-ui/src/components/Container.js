@@ -10,6 +10,7 @@ import JssProvider from 'react-jss/lib/JssProvider';
 import { create } from 'jss';
 import { createGenerateClassName, jssPreset } from '@material-ui/core/styles';
 import TeamPage from "./pages/TeamPage/TeamPage";
+import PlayerPage from "./pages/player/PlayerPage";
 
 const styles = theme => ({
     baseContainer: {
@@ -34,7 +35,7 @@ class Container extends React.Component{
                     <AppNavBar />
                 </RTL>
                 <div className={classes.appContainer}>
-                        <TeamPage/>
+                        <MatchPage/>
                 </div>
             </div>
             </JssProvider>
