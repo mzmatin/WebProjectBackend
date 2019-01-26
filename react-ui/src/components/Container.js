@@ -6,6 +6,10 @@ import NewsPage from "./pages/news/NewsPage";
 import Timeline from "./pages/matchPage/Timeline";
 import Header from "./pages/matchPage/Header";
 import MatchPage from "./pages/matchPage/MatchPage";
+import JssProvider from 'react-jss/lib/JssProvider';
+import { create } from 'jss';
+import { createGenerateClassName, jssPreset } from '@material-ui/core/styles';
+import TeamPage from "./pages/TeamPage/TeamPage";
 
 const styles = theme => ({
     baseContainer: {
@@ -17,18 +21,23 @@ const styles = theme => ({
     }
 });
 
+const generateClassName = createGenerateClassName();
+const jss = create(jssPreset());
+
 class Container extends React.Component{
     render() {
         const { classes} = this.props;
         return (
+            <JssProvider jss={jss} generateClassName={generateClassName}>
             <div className={classes.baseContainer}>
                 <RTL>
-                <AppNavBar />
+                    <AppNavBar />
                 </RTL>
                 <div className={classes.appContainer}>
-                    <NewsPage />
+                        <TeamPage/>
                 </div>
             </div>
+            </JssProvider>
         );
     }
 }
