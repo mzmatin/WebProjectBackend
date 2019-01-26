@@ -141,3 +141,4 @@ staticfiles/
 static-cdn-local/
 
 .idea/
+react-ui/package-lock\.json
