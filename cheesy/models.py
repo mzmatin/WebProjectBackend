@@ -153,3 +153,4 @@ class Media(models.Model):
     title = models.CharField(max_length=50)
     link = models.URLField()
     match = models.ForeignKey(Match, on_delete=models.CASCADE)
+

@@ -35,7 +35,7 @@ class Container extends React.Component{
                     <AppNavBar />
                 </RTL>
                 <div className={classes.appContainer}>
-                        <MatchPage/>
+                        <NewsPage/>
                 </div>
             </div>
             </JssProvider>
