@@ -136,3 +136,8 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+staticfiles/
+static-cdn-local/
+
+.idea/
