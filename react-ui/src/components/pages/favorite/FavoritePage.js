@@ -1,6 +1,6 @@
 import React from 'react';
-import withStyles from "@material-ui/core/es/styles/withStyles";
 import Grid from "../../utils/Grid";
+import withStyles from "@material-ui/core/styles/withStyles";
 
 const styles = theme => ({
     favoriteContainter:{

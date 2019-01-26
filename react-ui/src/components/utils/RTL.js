@@ -14,7 +14,10 @@ import {
 const jss = create({ plugins: [...jssPreset().plugins, rtl()] });
 
 // Custom Material-UI class text generator.
-const generateClassName = createGenerateClassName();
+const generateClassName = createGenerateClassName({
+    dangerouslyUseGlobalCSS: false,
+    productionPrefix: 'qas',
+});
 
 const theme = createMuiTheme({
     direction: 'rtl', // Both here and <body dir="rtl">

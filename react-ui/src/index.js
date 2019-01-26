@@ -4,20 +4,16 @@ import './index.css';
 import * as serviceWorker from './serviceWorker';
 import {library} from '@fortawesome/fontawesome-svg-core';
 import {
-    faCaretDown,
-    faCaretUp,
-    faChevronDown,
-    faChevronUp,
-    faClock,
-    faEye,
-    faFutbol,
-    faPeopleCarry,
-    faReply,
+    faClock, faEye, faReply,
+    faThumbsDown, faThumbsUp,
     faSquareFull,
-    faThumbsDown,
-    faThumbsUp
+    faFutbol, faPeopleCarry,
+    faCaretDown, faCaretUp,
+    faChevronDown, faChevronUp
 } from '@fortawesome/free-solid-svg-icons';
 import Container from "./components/Container";
+import Timeline from "./components/pages/matchPage/Timeline";
+import NewsPage from "./components/pages/news/NewsPage";
 
 library.add(
     faEye,

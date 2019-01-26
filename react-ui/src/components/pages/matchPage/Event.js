@@ -1,7 +1,7 @@
 import React from "react";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import PropTypes from "prop-types";
-import {withStyles} from "@material-ui/core";
+import withStyles from "@material-ui/core/styles/withStyles";
 import PersianNumber from "../../utils/PersianNumber";
 
 const styles = theme => ({

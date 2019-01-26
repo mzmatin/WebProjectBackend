@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {withStyles} from "@material-ui/core";
+import withStyles from "@material-ui/core/styles/withStyles";
 import PersianNumber from "../../utils/PersianNumber";
 import Paper from "@material-ui/core/Paper/Paper";
 import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary/ExpansionPanelSummary";

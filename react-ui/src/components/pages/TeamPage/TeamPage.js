@@ -1,5 +1,5 @@
 import React from 'react';
-import withStyles from "@material-ui/core/es/styles/withStyles";
+import withStyles from "@material-ui/core/styles/withStyles";
 import Members from "./Members";
 import MatchesList from "../../MatchesList";
 import Grid from "../../utils/Grid";

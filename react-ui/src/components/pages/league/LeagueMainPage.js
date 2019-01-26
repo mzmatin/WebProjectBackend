@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {withStyles} from '@material-ui/core/styles';
+import withStyles from "@material-ui/core/styles/withStyles";
 import Grid from "../../utils/Grid";
 import InputAdornment from "@material-ui/core/InputAdornment/InputAdornment";
 import Input from "@material-ui/core/Input/Input";
