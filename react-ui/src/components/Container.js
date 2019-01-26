@@ -11,6 +11,9 @@ import { create } from 'jss';
 import { createGenerateClassName, jssPreset } from '@material-ui/core/styles';
 import TeamPage from "./pages/TeamPage/TeamPage";
 import PlayerPage from "./pages/player/PlayerPage";
+import LeagueMainPage from "./pages/league/LeagueMainPage";
+import LeaguePage from "./pages/league/LeaguePage";
+import MainPage from "./pages/main/MainPage";
 
 const styles = theme => ({
     baseContainer: {
@@ -35,7 +38,7 @@ class Container extends React.Component{
                     <AppNavBar />
                 </RTL>
                 <div className={classes.appContainer}>
-                        <NewsPage/>
+                        <MainPage/>
                 </div>
             </div>
             </JssProvider>
