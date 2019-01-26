@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {withStyles} from '@material-ui/core/styles';
+import withStyles from "@material-ui/core/styles/withStyles";
 import PlayerAvatar from "./PlayerAvatar";
 import PlayerTable from "./PlayerInfTable";
 import PlayerStatTable from "./PlayerStatTable";
@@ -36,7 +36,7 @@ class PlayerPage extends React.Component {
         const information = this.getInformation(this.props.playerCode);
         const name = this.getPlayerName(this.props.playerCode);
         const address = this.getAddress(this.props.playerCode);
-        const stat = this.getStat(this.props.playerCode);
+        const stat = this.getStat(1);
         const newsList = this.getRelatedPlayerNews(this.props.playerCode);
         return (
 

@@ -1,7 +1,7 @@
 import React from 'react';
-import {withStyles} from "@material-ui/core";
+import withStyles from "@material-ui/core/styles/withStyles";
 import './knockout.css'
-import Paper from "@material-ui/core/es/Paper/Paper";
+import Paper from "@material-ui/core/Paper/Paper";
 
 const styles = theme => ({
 });

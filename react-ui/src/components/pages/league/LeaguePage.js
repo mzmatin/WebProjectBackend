@@ -1,5 +1,5 @@
 import React from 'react';
-import {withStyles} from "@material-ui/core";
+import withStyles from "@material-ui/core/styles/withStyles";
 import Paper from "@material-ui/core/Paper/Paper";
 import Ranking from "./Ranking";
 import MatchesList from "../../MatchesList";

@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {withStyles} from "@material-ui/core";
+import withStyles from "@material-ui/core/styles/withStyles";
 import ImageAvatars from "../../utils/ImageAvatars";
 import Paper from "@material-ui/core/Paper/Paper";
 import StatField from "./StatField";
