@@ -29,10 +29,12 @@ class PlayerPage extends React.Component {
         super(props);
         this.state = {
             season : "۱۳۹۴-۱۳۹۵",
-        }
+        };
+        this.id = props.match.params.id;
     }
     render() {
-        const { classes} = this.props;
+        console.log(this.id);
+        const {classes} = this.props;
         const information = this.getInformation(this.props.playerCode);
         const name = this.getPlayerName(this.props.playerCode);
         const address = this.getAddress(this.props.playerCode);

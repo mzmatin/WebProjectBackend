@@ -21,6 +21,9 @@ class Team(models.Model):
     )
     type = models.CharField(max_length=1, choices=TYPE_CHOICES, default='football')
 
+    def __str__(self):
+        return self.name
+
 
 class FollowedTeam(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -98,7 +101,7 @@ class FootballPlayerStat(models.Model):
     yellow_cards = models.IntegerField()
     best = models.IntegerField()
     league = models.ForeignKey(League, on_delete=models.CASCADE)
-    player = models.ForeignKey(Player, on_delete=models.CASCADE)
+    player = models.ForeignKey(FootballPlayer, on_delete=models.CASCADE)
 
 
 class BasketballPlayerStat(models.Model):
@@ -109,7 +112,7 @@ class BasketballPlayerStat(models.Model):
     max_score_in_one_game = models.IntegerField()
     best = models.IntegerField()
     league = models.ForeignKey(League, on_delete=models.CASCADE)
-    player = models.ForeignKey(Player, on_delete=models.CASCADE)
+    player = models.ForeignKey(BasketballPlayer, on_delete=models.CASCADE)
 
 
 class Match(models.Model):
@@ -118,8 +121,8 @@ class Match(models.Model):
     week = models.IntegerField()
     home_score = models.IntegerField(null=True)
     away_score = models.IntegerField(null=True)
-    home = models.ForeignKey(Team, on_delete=models.CASCADE)
-    away = models.ForeignKey(Team, on_delete=models.CASCADE)
+    home = models.ForeignKey(Team, on_delete=models.CASCADE, related_name="home")
+    away = models.ForeignKey(Team, on_delete=models.CASCADE, related_name="away")
     league = models.ForeignKey(League, on_delete=models.CASCADE)
 
 

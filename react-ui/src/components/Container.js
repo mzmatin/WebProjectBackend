@@ -8,6 +8,11 @@ import Header from "./pages/matchPage/Header";
 import MatchPage from "./pages/matchPage/MatchPage";
 import JssProvider from 'react-jss/lib/JssProvider';
 import { createGenerateClassName } from '@material-ui/core/styles';
+import {Switch, Route} from 'react-router-dom'
+import MainPage from "./pages/main/MainPage";
+import PlayerPage from "./pages/player/PlayerPage";
+import LeagueMainPage from "./pages/league/LeagueMainPage";
+import TeamPage from "./pages/TeamPage/TeamPage";
 
 const generateClassName = createGenerateClassName({
     dangerouslyUseGlobalCSS: false,
@@ -36,7 +41,14 @@ class Container extends React.Component{
                 <JssProvider generateClassName={generateClassName}>
                     <div className={classes.baseContainer}>
                         <div className={classes.appContainer}>
-                            <NewsPage />
+                            <Switch>
+                                <Route path={'/'} component={MainPage} exact/>
+                                <Route path={'/player/:id'} component={PlayerPage}/>
+                                <Route path={'/league'} component={LeagueMainPage}/>
+                                <Route path={'/news'} component={NewsPage}/>
+                                <Route path={'/match'} component={MatchPage}/>
+                                <Route path={'/team'} component={TeamPage}/>
+                            </Switch>
                         </div>
                     </div>
                 </JssProvider>
