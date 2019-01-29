@@ -12,7 +12,6 @@ import {
     faChevronDown, faChevronUp
 } from '@fortawesome/free-solid-svg-icons';
 import Container from "./components/Container";
-import {BrowserRouter} from 'react-router-dom'
 import Timeline from "./components/pages/matchPage/Timeline";
 import NewsPage from "./components/pages/news/NewsPage";
 
@@ -30,9 +29,7 @@ library.add(
 // ReactDOM.render(<RecipeReviewCard disLikeCount = {35}/>, document.getElementById('root'));
 // ReactDOM.render(<NewsPage/>, document.getElementById('root'));
 // ReactDOM.render(<Timeline awayEvents = {getSampleEvents()} homeEvents = {getSampleEvents()}/>, document.getElementById('root'));
-ReactDOM.render(<BrowserRouter>
-                    <Container/>
-                </BrowserRouter>, document.getElementById('root'));
+ReactDOM.render(<Container/>, document.getElementById('root'));
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

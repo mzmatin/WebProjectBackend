@@ -6,6 +6,9 @@ import PlayerTable from "./PlayerInfTable";
 import PlayerStatTable from "./PlayerStatTable";
 import SimpleSelect from "../../SimpleSelect";
 import Grid from "../../utils/Grid";
+import 'whatwg-fetch'
+import cookie from 'react-cookies'
+
 
 const styles = theme => ({
     playerPageContainer : {
@@ -33,13 +36,12 @@ class PlayerPage extends React.Component {
         this.id = props.match.params.id;
     }
     render() {
-        console.log(this.id);
         const {classes} = this.props;
-        const information = this.getInformation(this.props.playerCode);
-        const name = this.getPlayerName(this.props.playerCode);
-        const address = this.getAddress(this.props.playerCode);
+        const information = this.getInformation(this.id);
+        const name = this.getPlayerName(this.id);
+        const address = this.getAddress(this.id);
         const stat = this.getStat(1);
-        const newsList = this.getRelatedPlayerNews(this.props.playerCode);
+        const newsList = this.getRelatedPlayerNews(this.id);
         return (
 
             <div className={classes.playerPageContainer}>
@@ -67,6 +69,27 @@ class PlayerPage extends React.Component {
     }
 
     getInformation() {
+        if (window.location.href.includes('football')){
+            const endpoint = '/api/football-player/' + this.id.toString() + '/';
+            console.log(endpoint);
+            let lookupOptions = {
+                method: 'GET',
+                headers:{
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            };
+            fetch(endpoint, lookupOptions)
+                .then(function (response) {
+                    return response.json()
+                }).then(function (responseData) {
+                    console.log(responseData)
+                }).catch(function (error) {
+                    console.log('error', error)
+                })
+        } else {
+
+        }
         return {
           'age' : "۳۱",
           'height': '۱۷۰cm',

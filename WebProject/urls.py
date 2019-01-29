@@ -16,9 +16,12 @@ Including another URLconf
 
 from django.contrib import admin
 from django.views.generic import TemplateView
-from django.urls import path, include
+from django.urls import path, include, re_path
 
 urlpatterns = [
-    path('', TemplateView.as_view(template_name='react.html')),
+    path('api/', include('cheesy.urls')),
     path('admin/', admin.site.urls),
+    # path(r'.*', TemplateView.as_view(template_name='react.html')),
+    re_path(r'.*', TemplateView.as_view(template_name='react.html')),
 ]
+
