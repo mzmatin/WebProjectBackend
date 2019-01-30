@@ -11,6 +11,9 @@ class League(models.Model):
     season_pre = models.IntegerField()
     season_post = models.IntegerField()
 
+    def __str__(self):
+        return self.name + " " + str(self.season_pre) + '-' + str(self.season_post)
+
 
 class Team(models.Model):
     avatar = models.ImageField(upload_to='team_images/')
@@ -61,16 +64,16 @@ class Player(models.Model):
 
 class FootballPlayer(Player):
     POSITION_CHOICES = (
-        ('gk', 'goal-keeper'),
-        ('dl', 'defender-left'),
-        ('dc', 'defender-center'),
-        ('dr', 'defender-right'),
-        ('ml', 'midfielder-left'),
-        ('mc', 'midfielder-center'),
-        ('mr', 'midfielder-right'),
-        ('fl', 'forward-left'),
-        ('fc', 'forward-center'),
-        ('fr', 'forward-right'),
+        ('gk', 'دروازبان'),
+        ('dl', 'مدافع-چپ'),
+        ('dc', 'مدافع-وسط'),
+        ('dr', 'مدافع-راست'),
+        ('ml', 'هافبک-چپ'),
+        ('mc', 'هافبک-وسط'),
+        ('mr', 'هافبک-راست'),
+        ('fl', 'مهاجم-چپ'),
+        ('fc', 'مهاجم-وسط'),
+        ('fr', 'مهاجم-راست'),
     )
     position = models.CharField(max_length=2, choices=POSITION_CHOICES)
 
@@ -102,6 +105,10 @@ class FootballPlayerStat(models.Model):
     best = models.IntegerField()
     league = models.ForeignKey(League, on_delete=models.CASCADE)
     player = models.ForeignKey(FootballPlayer, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.player.name + "'s stat--" + self.league.name + " " + str(self.league.season_pre) + "-" \
+               + str(self.league.season_post)
 
 
 class BasketballPlayerStat(models.Model):

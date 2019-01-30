@@ -8,6 +8,7 @@ import SimpleSelect from "../../SimpleSelect";
 import Grid from "../../utils/Grid";
 import 'whatwg-fetch'
 import cookie from 'react-cookies'
+import PersianNumber from "../../utils/PersianNumber";
 
 
 const styles = theme => ({
@@ -32,25 +33,29 @@ class PlayerPage extends React.Component {
         super(props);
         this.state = {
             season : "۱۳۹۴-۱۳۹۵",
+            generalInformation: null,
         };
         this.id = props.match.params.id;
     }
+
+    componentDidMount() {
+        this.getInformation();
+    }
+
     render() {
         const {classes} = this.props;
-        const information = this.getInformation(this.id);
-        const name = this.getPlayerName(this.id);
-        const address = this.getAddress(this.id);
         const stat = this.getStat(1);
         const newsList = this.getRelatedPlayerNews(this.id);
-        return (
+        if (this.state.generalInformation !== null){
+            return (
 
             <div className={classes.playerPageContainer}>
                 <div className={classes.rowContainer}>
                     <div>
-                        <PlayerAvatar text={name} avatar={address}/>
+                        <PlayerAvatar text={this.state.generalInformation['name']} avatar={this.state.generalInformation['url']}/>
                     </div>
                     <div>
-                        <PlayerTable information={information}/>
+                        <PlayerTable information={this.state.generalInformation}/>
                     </div>
                 </div>
                 <div className={classes.rowContainer} style={{marginTop:'100px'}}>
@@ -65,49 +70,42 @@ class PlayerPage extends React.Component {
                     <Grid listItems={newsList} listTitle={"اخبار مرتبط"} width={'auto'} columns={2}/>
                 </div>
             </div>
-        );
-    }
-
-    getInformation() {
-        if (window.location.href.includes('football')){
-            const endpoint = '/api/football-player/' + this.id.toString() + '/';
-            console.log(endpoint);
-            let lookupOptions = {
-                method: 'GET',
-                headers:{
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                }
-            };
-            fetch(endpoint, lookupOptions)
-                .then(function (response) {
-                    return response.json()
-                }).then(function (responseData) {
-                    console.log(responseData)
-                }).catch(function (error) {
-                    console.log('error', error)
-                })
+            );
         } else {
-
+            return <div>Loading....</div>
         }
-        return {
-          'age' : "۳۱",
-          'height': '۱۷۰cm',
-          'weight': '71kg',
-          'nationality': 'آرژانتین',
-          'position': 'مهاجم',
-          'team': 'بارسلونا',
+    }
+
+
+    // returns players general information
+    getInformation() {
+        let thisComp = this;
+        let endpoint = undefined;
+        if (window.location.href.includes('football')) {
+            endpoint = 'http://127.0.0.1:8000/api/football-player/' + this.id.toString() + '/';
+        } else {
+            endpoint = '/api/basketball-player/' + this.id.toString() + '/';
+        }
+
+        let lookupOptions = {
+            method: 'GET',
+            headers:{
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
         };
+        fetch(endpoint, lookupOptions)
+            .then(function (response) {
+                return response.json()
+            }).then(function (responseData) {
+                thisComp.setState({
+                    generalInformation: responseData
+                });
+            }).catch(function (error) {
+                console.log('error', error)
+            });
     }
 
-
-    getPlayerName(PlayerCode) {
-        return "مسی";
-    }
-
-    getAddress(PlayerCode) {
-        return "https://static.farakav.com/files/pictures/01096693.jpg";
-    }
 
     getStat(playerCode) {
         if (playerCode===1) {

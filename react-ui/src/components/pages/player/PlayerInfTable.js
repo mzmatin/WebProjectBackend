@@ -6,6 +6,7 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+import PersianNumber from "../../utils/PersianNumber";
 
 const styles = theme => ({
     root: {
@@ -27,21 +28,21 @@ function PlayerInfTable(props) {
                 <TableBody>
                     <TableRow>
                         <TableCell style={{fontWeight:'bold'}}>سن</TableCell>
-                        <TableCell>{props.information['age']}</TableCell>
+                        <TableCell><PersianNumber>{props.information['age'].toString()}</PersianNumber></TableCell>
                         <TableCell style={{fontWeight:'bold'}}>تیم</TableCell>
                         <TableCell>{props.information["team"]}</TableCell>
                     </TableRow>
                     <TableRow>
                         <TableCell style={{fontWeight:'bold'}}>قد</TableCell>
-                        <TableCell>{props.information["height"]}</TableCell>
+                        <TableCell><PersianNumber>{props.information["height"].toString()}</PersianNumber></TableCell>
                         <TableCell style={{fontWeight:'bold'}}>ملیت</TableCell>
                         <TableCell>{props.information["nationality"]}</TableCell>
                     </TableRow>
                     <TableRow>
                         <TableCell style={{fontWeight:'bold'}}>وزن</TableCell>
-                        <TableCell>{props.information["weight"]}</TableCell>
+                        <TableCell><PersianNumber>{props.information["weight"].toString()}</PersianNumber></TableCell>
                         <TableCell style={{fontWeight:'bold'}}>پست</TableCell>
-                        <TableCell>{props.information["position"]}</TableCell>
+                        <TableCell>{props.information["ps"]}</TableCell>
                     </TableRow>
 
                 </TableBody>

@@ -1,9 +1,11 @@
 from django.conf.urls import url, include
 from rest_framework import routers, serializers, viewsets
-from cheesy.views import FootballPlayerViewSet
+from cheesy.views import *
 
 router = routers.DefaultRouter()
 router.register(r'football-player', FootballPlayerViewSet)
+router.register(r'basketball-player', BasketballPlayerViewSet)
+router.register(r'football-player-stat', FootballPlayerStatViewSet)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
