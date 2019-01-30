@@ -32,23 +32,27 @@ class PlayerPage extends React.Component {
     constructor(props){
         super(props);
         this.state = {
-            season : "۱۳۹۴-۱۳۹۵",
+            season : null,
             generalInformation: null,
+            leagueStats: null,
+            leagueNameList:null,
+            leaguesTableStats: null,
         };
         this.id = props.match.params.id;
     }
 
     componentDidMount() {
         this.getInformation();
+        this.getStats();
     }
 
     render() {
         const {classes} = this.props;
-        const stat = this.getStat(1);
         const newsList = this.getRelatedPlayerNews(this.id);
-        if (this.state.generalInformation !== null){
+        if (this.state.generalInformation !== null && this.state.leagueStats !== null
+            && this.state.leagueNameList !== null && this.state.leaguesTableStats !== null && this.state.season !== null){
+            console.log(this.state, 'state');
             return (
-
             <div className={classes.playerPageContainer}>
                 <div className={classes.rowContainer}>
                     <div>
@@ -60,12 +64,12 @@ class PlayerPage extends React.Component {
                 </div>
                 <div className={classes.rowContainer} style={{marginTop:'100px'}}>
                     <div style={{marginLeft:'40px'}}>
-                        <SimpleSelect subject={"فصل"} items={["۱۳۹۶-۱۳۹۷", "۱۳۹۵-۱۳۹۶"]}
+                        <SimpleSelect subject={"فصل"} items={this.state.leagueNameList}
                                       value={this.state.season}
                                       leagueChange={(league) => {
                             this.setState({season: league});
                         }}/>
-                        <PlayerStatTable information={stat}/>
+                        <PlayerStatTable information={this.state.leaguesTableStats[this.state.season]}/>
                     </div>
                     <Grid listItems={newsList} listTitle={"اخبار مرتبط"} width={'auto'} columns={2}/>
                 </div>
@@ -82,7 +86,7 @@ class PlayerPage extends React.Component {
         let thisComp = this;
         let endpoint = undefined;
         if (window.location.href.includes('football')) {
-            endpoint = 'http://127.0.0.1:8000/api/football-player/' + this.id.toString() + '/';
+            endpoint = '/api/football-player/' + this.id.toString() + '/';
         } else {
             endpoint = '/api/basketball-player/' + this.id.toString() + '/';
         }
@@ -106,53 +110,76 @@ class PlayerPage extends React.Component {
             });
     }
 
+    // returns player stat based on season appearances
+    getStats() {
+        let thisComp = this;
+        let endpoint = undefined;
+        if (window.location.href.includes('football')){
+            endpoint = '/api/football-player-stat/?player=' + this.id.toString()
+        } else {
+            endpoint = '/api/basketball-player-stat/?player=' + this.id.toString()
+        }
+        let lookupOptions = {
+            method: 'GET',
+            headers:{
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            }
+        };
+        fetch(endpoint, lookupOptions)
+            .then(function (response) {
+                return response.json()
+            }).then(function (responseData) {
+            thisComp.setState({
+                leagueStats: responseData
+            });
+            thisComp.getLeagueNamesList();
+        }).then(function (error) {
+            console.log(error)
+        });
+    }
 
-    getStat(playerCode) {
-        if (playerCode===1) {
-            if (this.state.season === "۱۳۹۶-۱۳۹۷"){
-                return {
-                    "type": "football",
-                    "goal": "۴۵",
-                    "assist": "۱۷",
-                    "numOfMatches": "۳۰",
-                    "yellowCard": "۳",
-                    "redCard": "۱",
-                    "manOfTheMatch": "۲۰",
-                }
-            } else {
-                return {
-                    "type": "football",
-                    "goal": "۵۵",
-                    "assist": "۲۷",
-                    "numOfMatches": "۳۳",
-                    "yellowCard": "۵",
-                    "redCard": "۲",
-                    "manOfTheMatch": "۱۴",
-                }
+    // returns player stat based on chosen league
+    getLeagueNamesList(){
+        const stats = this.state.leagueStats;
+        let leaguesNameList = [];
+        let matchType = window.location.href.includes('football') ? 'football' : 'basketball';
+        let leaguesStat = {};
+        let temp = "";
+        if (matchType === 'football'){
+            for (let i = 0; i < stats.length; i++){
+                temp = stats[i]['league_name'] + ' ' + stats[i]['league_pre'].toString() +"-"+stats[i]['league_post'].toString();
+                leaguesNameList.push(temp);
+                leaguesStat[temp] = {
+                    'type': matchType,
+                    'goals': stats[i]['goals'],
+                    'assists': stats[i]['assists'],
+                    'appearance': stats[i]['appearance'],
+                    'red_cards': stats[i]['red_cards'],
+                    'yellow_cards': stats[i]['yellow_cards'],
+                    'best': stats[i]['best'],
+                };
             }
         } else {
-            if (this.state.season === "۱۳۹۶-۱۳۹۷"){
-                return {
-                    "type": "basketball",
-                    "score": "۲۰۰",
-                    "3score": "۴۰",
-                    "2score": "۴۰",
-                    "rebound": "۳۷",
-                    "maxScore": "۵۶",
-                    "manOfTheMatch": "۱۲",
-                }
-            } else {
-                return {
-                    "type": "basketball",
-                    "score": "۱۸۰",
-                    "3score": "۳۴",
-                    "2score": "۳۹",
-                    "rebound": "۵۰",
-                    "maxScore": "۴۰",
-                    "manOfTheMatch": "۲۰",
-                }
+            for (let i = 0; i < stats.length; i++){
+                temp = stats[i]['league_name'] + ' ' + stats[i]['league_pre'].toString() +"-"+stats[i]['league_post'].toString();
+                leaguesNameList.push(temp);
+                leaguesStat[temp] = {
+                    'type': matchType,
+                    'scores': stats[i]['scores'],
+                    'triple_points': stats[i]['triple_points'],
+                    'double_points': stats[i]['double_points'],
+                    'rebounds': stats[i]['rebounds'],
+                    'max_score_in_one_game': stats[i]['max_score_in_one_game'],
+                    'best': stats[i]['best'],
+                };
             }
         }
+        this.setState({
+            leagueNameList:leaguesNameList,
+            leaguesTableStats:leaguesStat,
+            season: leaguesNameList[0],
+        });
     }
 
     getRelatedPlayerNews(playerCode) {

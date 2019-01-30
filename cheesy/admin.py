@@ -5,9 +5,10 @@ from .models import *
 
 
 admin.site.register(Team)
+admin.site.register(League)
 admin.site.register(FootballPlayer)
 admin.site.register(BasketballPlayer)
-admin.site.register(League)
 admin.site.register(FootballPlayerStat)
+admin.site.register(BasketballPlayerStat)
 
 

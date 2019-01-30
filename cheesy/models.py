@@ -115,11 +115,15 @@ class BasketballPlayerStat(models.Model):
     scores = models.IntegerField()
     triple_points = models.IntegerField()
     double_points = models.IntegerField()
-    rebound = models.IntegerField()
+    rebounds = models.IntegerField()
     max_score_in_one_game = models.IntegerField()
     best = models.IntegerField()
     league = models.ForeignKey(League, on_delete=models.CASCADE)
     player = models.ForeignKey(BasketballPlayer, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.player.name + "'s stat--" + self.league.name + " " + str(self.league.season_pre) + "-" \
+               + str(self.league.season_post)
 
 
 class Match(models.Model):

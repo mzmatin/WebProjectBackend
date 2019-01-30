@@ -26,3 +26,17 @@ class FootballPlayerStatViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(player=player_id)
         serial = FootballPlayerStatSerializer(queryset, many=True)
         return Response(data=serial.data)
+
+
+class BasketballPlayerStatViewSet(viewsets.ModelViewSet):
+    queryset = BasketballPlayerStat.objects.all()
+    serializer_class = BasketballPlayerStatSerializer
+
+    def list(self, request, *args, **kwargs):
+        player_id = request.GET.get('player', None)
+        queryset = BasketballPlayerStat.objects.all()
+        if player_id:
+            queryset = queryset.filter(player=player_id)
+        serial = BasketballPlayerStatSerializer(queryset, many=True)
+        return Response(data=serial.data)
+

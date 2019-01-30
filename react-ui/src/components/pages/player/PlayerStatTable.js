@@ -6,6 +6,7 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+import PersianNumber from "../../utils/PersianNumber";
 
 const styles = theme => ({
     root: {
@@ -25,40 +26,41 @@ function PlayerStatTable(props) {
     if (props.information["type"] === "football"){
         inf = [<TableRow key={0}>
                 <TableCell style={{fontWeight:'bold'}}>گل</TableCell>
-                <TableCell>{props.information['goal']}</TableCell>
+            <TableCell><PersianNumber>{props.information['goals'].toString()}</PersianNumber></TableCell>
                 <TableCell style={{fontWeight:'bold'}}>پاس گل</TableCell>
-                <TableCell>{props.information["assist"]}</TableCell>
+            <TableCell><PersianNumber>{props.information["assists"].toString()}</PersianNumber></TableCell>
             </TableRow>,
             <TableRow key={1}>
                 <TableCell style={{fontWeight:'bold'}}>تعداد بازی</TableCell>
-                <TableCell>{props.information["numOfMatches"]}</TableCell>
+                <TableCell><PersianNumber>{props.information["appearance"].toString()}</PersianNumber></TableCell>
                 <TableCell style={{fontWeight:'bold'}}>کارت زرد</TableCell>
-                <TableCell>{props.information["yellowCard"]}</TableCell>
+                <TableCell><PersianNumber>{props.information["yellow_cards"].toString()}</PersianNumber></TableCell>
             </TableRow>,
             <TableRow key={2}>
                 <TableCell style={{fontWeight:'bold'}}>کارت قرمز</TableCell>
-                <TableCell>{props.information["redCard"]}</TableCell>
+                <TableCell><PersianNumber>{props.information["red_cards"].toString()}</PersianNumber></TableCell>
                 <TableCell style={{fontWeight:'bold'}}>بهترین بازیکن زمین</TableCell>
-                <TableCell>{props.information["manOfTheMatch"]}</TableCell>
+                <TableCell><PersianNumber>{props.information["best"].toString()}</PersianNumber></TableCell>
             </TableRow>,]
-    }  else {
+    } else {
+        console.log("basketballing");
         inf = [<TableRow key={0}>
             <TableCell style={{fontWeight:'bold'}}>امتیاز</TableCell>
-            <TableCell>{props.information['score']}</TableCell>
+            <TableCell><PersianNumber>{props.information['scores'].toString()}</PersianNumber></TableCell>
             <TableCell style={{fontWeight:'bold'}}>سه امتیازی</TableCell>
-            <TableCell>{props.information["3score"]}</TableCell>
+            <TableCell><PersianNumber>{props.information["triple_points"].toString()}</PersianNumber></TableCell>
             </TableRow>,
             <TableRow key={1}>
                 <TableCell style={{fontWeight:'bold'}}>دو امتیازی</TableCell>
-                <TableCell>{props.information["2score"]}</TableCell>
+                <TableCell><PersianNumber>{props.information["double_points"].toString()}</PersianNumber></TableCell>
                 <TableCell style={{fontWeight:'bold'}}>ریباند</TableCell>
-                <TableCell>{props.information["rebound"]}</TableCell>
+                <TableCell><PersianNumber>{props.information["rebounds"].toString()}</PersianNumber></TableCell>
             </TableRow>,
             <TableRow key={2}>
                 <TableCell style={{fontWeight:'bold'}}>بیشتزین امتیاز در یک بازی</TableCell>
-                <TableCell>{props.information["maxScore"]}</TableCell>
+                <TableCell><PersianNumber>{props.information["max_score_in_one_game"].toString()}</PersianNumber></TableCell>
                 <TableCell style={{fontWeight:'bold'}}>بهترین بازیکن</TableCell>
-                <TableCell>{props.information["manOfTheMatch"]}</TableCell>
+                <TableCell><PersianNumber>{props.information["best"].toString()}</PersianNumber></TableCell>
             </TableRow>,]
     }
     return (
