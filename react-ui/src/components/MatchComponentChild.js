@@ -4,35 +4,39 @@ import PropTypes from "prop-types";
 import 'typeface-roboto';
 import Typography from '@material-ui/core/Typography';
 import ImageAvatars from "./utils/ImageAvatars";
+import {withRouter} from "react-router-dom";
 
 const styles = theme => ({
-   matchComponent : {
-        display : 'flex',
-        flexDirection : 'column',
-   },
-   matchType :{
-        display : 'flex',
-        flexDirection: 'row',
-        justifyContent : 'center',
-   },
-   logoName : {
-        display : 'flex',
-        flexDirection : 'row',
-        justifyContent : 'space-evenly',
-   },
-    result : {
-        alignSelf : 'center',
+    matchComponent: {
+        display: 'flex',
+        flexDirection: 'column',
     },
-    Date : {
-       alignSelf: 'center',
+    matchType: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'center',
+    },
+    logoName: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
+    },
+    result: {
+        alignSelf: 'center',
+    },
+    Date: {
+        alignSelf: 'center',
     }
 });
 
-class MatchComponentChild extends React.Component{
+class MatchComponentChild extends React.Component {
     render() {
-        const { classes } = this.props;
+        const {classes} = this.props;
         return (
-          <div className={classes.matchComponent} >
+            <div className={classes.matchComponent} onClick={() => {
+                let path = '/match/' + this.props.pk.toString();
+                this.props.history.push(path);
+            }}>
                 <div className={classes.matchType}>
                     <div>
                         <Typography variant="h6" gutterBottom>
@@ -50,7 +54,7 @@ class MatchComponentChild extends React.Component{
                         </Typography>
                     </div>
                     <div>
-                        <ImageAvatars size = {60} avatar={this.props.address2} name={this.props.name2}/>
+                        <ImageAvatars size={60} avatar={this.props.address2} name={this.props.name2}/>
                     </div>
                 </div>
                 <div className={classes.Date}>
@@ -58,13 +62,14 @@ class MatchComponentChild extends React.Component{
                         {this.props.date}
                     </Typography>
                 </div>
-          </div>
+            </div>
         );
     }
 }
+
 MatchComponentChild.propTypes = {
     classes: PropTypes.object.isRequired,
     theme: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles, { withTheme: true })(MatchComponentChild);
+export default withRouter(withStyles(styles, {withTheme: true})(MatchComponentChild));

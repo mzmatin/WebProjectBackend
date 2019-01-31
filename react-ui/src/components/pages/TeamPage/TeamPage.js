@@ -3,10 +3,11 @@ import withStyles from "@material-ui/core/styles/withStyles";
 import Members from "./Members";
 import MatchesList from "../../MatchesList";
 import Grid from "../../utils/Grid";
-import Checkbox from "@material-ui/core/Checkbox/Checkbox";
 import Radio from '@material-ui/core/Radio';
 import 'whatwg-fetch'
-import SimpleSelect from "../../SimpleSelect";
+import Input from "@material-ui/core/Input/Input";
+import InputAdornment from "@material-ui/core/InputAdornment/InputAdornment";
+import SearchIcon from '@material-ui/icons/Search';
 
 const styles = theme => ({
     teamPageContainer: {
@@ -30,12 +31,22 @@ class TeamPage extends React.Component {
             selectedValue: 'a',
             teamInformation: null,
             matches: null,
+            opponentName: '',
         };
         this.id = props.match.params.id;
     }
 
     handleChange = event => {
         this.setState({selectedValue: event.target.value});
+    };
+
+    handleOpponentChange = event => {
+        if (event.key === 'Enter') {
+            const input = event.target.value;
+            this.setState({
+                opponentName: input,
+            });
+        }
     };
 
     componentDidUpdate(prevProps, prevState, snapshot) {
@@ -46,17 +57,21 @@ class TeamPage extends React.Component {
         const {classes} = this.props;
         const newsList = this.getRelatedTeamNews(this.id);
         if (this.state.teamInformation !== null && this.state.matches !== null) {
-            console.log(this.state.selectedValue);
             return (
                 <div className={classes.teamPageContainer}>
                     <Members teamCode={this.id} teamInformation={this.state.teamInformation}/>
                     <div className={classes.matchNewsContainer}>
                         <div style={{marginLeft: '20px'}}>
-                            <SimpleSelect subject={"فصل"} items={this.state.leagueNameList}
-                                          value={this.state.season}
-                                          leagueChange={(league) => {
-                                              this.setState({season: league});
-                                          }}/>
+                            <Input
+                                id="input-with-icon-adornment"
+                                startAdornment={
+                                    <InputAdornment position="start">
+                                        <SearchIcon/>
+                                    </InputAdornment>
+                                }
+                                placeholder={"نام تیم حریف"}
+                                onKeyDown={this.handleOpponentChange}
+                            />
                             <Radio
                                 checked={this.state.selectedValue === 'a'}
                                 onChange={this.handleChange}
@@ -123,6 +138,9 @@ class TeamPage extends React.Component {
                 endpoint += '&lost=1';
                 break;
         }
+        if (thisComp.state.opponentName !== ''){
+            endpoint += '&team2=' + thisComp.state.opponentName;
+        }
         let lookupOptions = {
             method: 'GET',
             headers: {
@@ -137,7 +155,6 @@ class TeamPage extends React.Component {
             thisComp.setState({
                 matches: responseData
             });
-            console.log(thisComp.state.matches)
         }).catch(function (error) {
             console.log('error', error)
         });
@@ -145,7 +162,7 @@ class TeamPage extends React.Component {
 
     getTeamInformation() {
         let thisComp = this;
-        let endpoint = '/api/team/' + this.id.toString() + '/';
+        let endpoint = '/api/team/' + thisComp.id.toString() + '/';
         let lookupOptions = {
             method: 'GET',
             headers: {
@@ -160,7 +177,6 @@ class TeamPage extends React.Component {
             thisComp.setState({
                 teamInformation: responseData
             });
-            console.log(thisComp.state.teamInformation)
         }).catch(function (error) {
             console.log('error', error)
         });

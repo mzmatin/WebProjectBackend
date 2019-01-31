@@ -7,6 +7,7 @@ import GridListTileBar from '@material-ui/core/GridListTileBar';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import IconButton from '@material-ui/core/IconButton';
 import InfoIcon from '@material-ui/icons/Info';
+import {withRouter} from "react-router-dom";
 
 const styles = theme => ({
     root: {
@@ -27,26 +28,31 @@ const styles = theme => ({
 });
 
 const nowrap = {
-  whiteSpace : 'normal',
+    whiteSpace: 'normal',
 };
+
 function Grid(props) {
-    const { classes } = props;
+    const {classes} = props;
 
     return (
         <div className={classes.root}>
-            <GridList cellHeight={180} className={classes.gridList} style={{width:props.width}}>
-                <GridListTile key="Subheader" cols={props.columns} style={{ height: 'auto' }}>
+            <GridList cellHeight={180} className={classes.gridList} style={{width: props.width}}>
+                <GridListTile key="Subheader" cols={props.columns} style={{height: 'auto'}}>
                     <ListSubheader component="div">{props.listTitle}</ListSubheader>
                 </GridListTile>
                 {props.listItems.map((tile, i) => (
                     <GridListTile key={i}>
-                        <img src={tile.address} alt={tile.text} />
+                        <img src={tile.address} alt={tile.text}/>
                         <GridListTileBar
                             title={<span style={nowrap}>{tile.text}</span>}
                             subtitle={<span>{tile.subtitle}</span>}
                             actionIcon={
-                                <IconButton className={classes.icon}>
-                                    <InfoIcon />
+                                <IconButton className={classes.icon} onClick={() => {
+                                    let path = tile['rel_url'];
+                                    props.history.push(path);
+                                }
+                                }>
+                                    <InfoIcon/>
                                 </IconButton>
                             }
                         />
@@ -61,4 +67,4 @@ Grid.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(Grid);
+export default withRouter(withStyles(styles)(Grid));

@@ -69,19 +69,19 @@ class Field extends React.Component{
             case 'fl':
                 return {'x': 110 * width/100, 'y':height/2};
                 break;
-            case 'bpg':
+            case 'pg':
                 return {'x':width, 'y':0};
                 break;
-            case 'bsg':
+            case 'sg':
                 return {'x':1.12*width, 'y':height/3};
                 break;
-            case 'bsf':
+            case 'sf':
                 return {'x':1.45*width, 'y':-height/4};
                 break;
-            case 'bpf':
+            case 'pf':
                 return {'x':1.3*width, 'y':height/4};
                 break;
-            case 'bc':
+            case 'c':
                 return {'x':1.25*width, 'y':-height/4};
         }
         return null;

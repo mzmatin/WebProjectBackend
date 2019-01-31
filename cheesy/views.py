@@ -30,6 +30,19 @@ class BasketballPlayerViewSet(viewsets.ModelViewSet):
     serializer_class = BasketballPlayerSerializer
 
 
+class BasketballMemberViewSet(viewsets.ModelViewSet):
+    queryset = BasketballPlayer.objects.all()
+    serializer_class = BasketballMemberSerializer
+
+    def list(self, request, *args, **kwargs):
+        team_id = request.GET.get('team', None)
+        queryset = BasketballPlayer.objects.all()
+        if team_id:
+            queryset = queryset.filter(team=team_id)
+        serial = BasketballMemberSerializer(queryset, many=True)
+        return Response(data=serial.data)
+
+
 class FootballPlayerStatViewSet(viewsets.ModelViewSet):
     queryset = FootballPlayerStat.objects.all()
     serializer_class = FootballPlayerStatSerializer
@@ -88,7 +101,7 @@ class MatchTileViewSet(viewsets.ModelViewSet):
         if team1:
             queryset = queryset.filter(Q(home=team1) | Q(away=team1)).order_by('-date')
             if team2:
-                queryset = queryset.filter(Q(home=team2) | Q(away=team2))
+                queryset = queryset.filter(Q(home__name=team2) | Q(away__name=team2))
             if win:
                 queryset = queryset.filter((Q(home=team1) & Q(home_score__gt=F('away_score'))) |
                                            (Q(away=team1) & Q(away_score__gt=F('home_score'))))
@@ -103,3 +116,20 @@ class MatchTileViewSet(viewsets.ModelViewSet):
         return Response(data=serial.data)
 
 
+class LeagueViewSet(viewsets.ModelViewSet):
+    queryset = League.objects.all()
+    serializer_class = LeagueSerializer
+
+    def list(self, request, *args, **kwargs):
+        current_year = request.GET.get('current', None)
+        year = request.GET.get('year', None)
+        archive = request.GET.get('archive', None)
+        queryset = League.objects.all()
+        if current_year:
+            queryset = queryset.filter(season_pre__exact=current_year)
+        if year:
+            queryset = queryset.filter(Q(season_pre=year) | Q(season_post=year))
+        if archive:
+            queryset = queryset.filter(Q(season_post__lte=archive))
+        serial = LeagueSerializer(queryset, many=True)
+        return Response(data=serial.data)

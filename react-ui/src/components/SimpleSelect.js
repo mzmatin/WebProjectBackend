@@ -23,16 +23,16 @@ class SimpleSelect extends React.Component {
     };
 
     render() {
-        const { classes } = this.props;
+        const {classes} = this.props;
         const items = [];
-        for (let i = 0; i < this.props.items.length; i++){
+        for (let i = 0; i < this.props.items.length; i++) {
             items.push(
                 <MenuItem value={this.props.items[i]} key={i}>{this.props.items[i]}</MenuItem>
             );
         }
         return (
             <form className={classes.root} autoComplete="off">
-            <FormControl className={classes.formControl}>
+                <FormControl className={classes.formControl}>
                     <InputLabel htmlFor={this.props.subject}>{this.props.subject}</InputLabel>
                     <Select
                         value={this.props.value}

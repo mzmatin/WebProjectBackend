@@ -31,6 +31,14 @@ class FootballMemberSerializer(serializers.ModelSerializer):
         fields = ('name', 'position', 'url', 'pk')
 
 
+class BasketballMemberSerializer(serializers.ModelSerializer):
+    url = serializers.CharField(source='avatar.url')
+
+    class Meta:
+        model = FootballPlayer
+        fields = ('name', 'position', 'url', 'pk')
+
+
 class FootballPlayerStatSerializer(serializers.ModelSerializer):
     league_name = serializers.CharField(source='league.name')
     league_pre = serializers.IntegerField(source='league.season_pre')
@@ -60,7 +68,7 @@ class TeamSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Team
-        fields = ('url', 'name', 'type')
+        fields = ('url', 'name', 'type', 'pk')
 
 
 class StaffSerializer(serializers.ModelSerializer):
@@ -110,3 +118,22 @@ class MatchTileSerializer(serializers.ModelSerializer):
     @staticmethod
     def get_subtitle(obj):
         return str(obj.date)
+
+
+class LeagueSerializer(serializers.ModelSerializer):
+    text = serializers.CharField(source='name')
+    address = serializers.URLField(source='picture_link')
+    subtitle = serializers.SerializerMethodField()
+    rel_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = League
+        fields = ('text', 'address', 'subtitle', 'rel_url')
+
+    @staticmethod
+    def get_subtitle(obj):
+        return enToPersianNumb(str(obj.season_pre)) + '-' + enToPersianNumb(str(obj.season_post))
+
+    @staticmethod
+    def get_rel_url(obj):
+        return '/league/' + str(obj.pk)
