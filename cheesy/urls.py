@@ -7,6 +7,10 @@ router.register(r'football-player', FootballPlayerViewSet)
 router.register(r'basketball-player', BasketballPlayerViewSet)
 router.register(r'football-player-stat', FootballPlayerStatViewSet)
 router.register(r'basketball-player-stat', BasketballPlayerStatViewSet)
+router.register(r'team', TeamViewSet)
+router.register(r'staff', StaffViewSet)
+router.register(r'match-tile', MatchTileViewSet)
+router.register(r'football-member', FootballMemberViewSet)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.

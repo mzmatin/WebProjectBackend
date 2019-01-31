@@ -1,49 +1,52 @@
 import React from 'react';
 import withStyles from "@material-ui/core/styles/withStyles";
 import MembersList from "./MembersList";
+import 'whatwg-fetch'
 
-const styles = theme => ({
+const styles = theme => ({});
 
-});
-
-class Members extends React.Component{
-    constructor(props){
+class Members extends React.Component {
+    constructor(props) {
         super(props);
         this.state = {
-            members: [],
+            members: null,
+            staffs: null,
+            showMembers: null,
         };
         this.handlePost = this.handlePost.bind(this);
     }
 
-    componentWillMount() {
-        this.setState({
-            members: this.getTeamMembers(this.props.teamCode)
-        });
+    componentDidMount() {
+        this.getTeamMembers();
+        this.getTeamStaffs();
     }
 
     render() {
-        const { classes} = this.props;
-        const member_list = this.state.members;
-        const name = this.getClubName(this.props.teamCode);
-        const logo = this.getLogo(this.props.teamCode);
-        const sport = this.getSport(this.props.teamCode);
-        return (
-          <div>
-              <MembersList members={member_list} club={name} logo={logo} sport={sport} handlePost={this.handlePost}/>
-          </div>
-        );
+        const {classes} = this.props;
+        if (this.state.members !== null && this.state.staffs !== null && this.state.showMembers != null) {
+            return (
+                <div>
+                    <MembersList members={this.state.showMembers.concat(this.state.staffs)} club={this.props.teamInformation['name']}
+                                 logo={this.props.teamInformation['url']} sport={this.props.teamInformation['type']}
+                                 handlePost={this.handlePost}/>
+                </div>
+            );
+        } else {
+            return <div>Loading...</div>
+        }
+
     }
 
-
-    handlePost(event){
-        if (event.key === 'Enter'){
+    // handling search in players
+    handlePost(event) {
+        if (event.key === 'Enter') {
             const input = event.target.value;
-            const members = this.getTeamMembers(this.props.teamCode);
-            if (input === ""){
+            const members = this.state.members;
+            if (input === "") {
                 this.setState({
-                    members: members
+                    showMembers: members
                 });
-            }  else {
+            } else {
                 let result = members;
                 switch (input) {
                     case 'حمله':
@@ -55,87 +58,64 @@ class Members extends React.Component{
                     case 'دفاع':
                         result = members.filter(member => member.position.startsWith('d'));
                         break;
-                    case 'کادر':
-                        result = members.filter(member => member.position.length>3);
-                        break;
                 }
-                this.setState({members:result})
+                this.setState({showMembers: result})
             }
         }
     }
 
-    getTeamMembers(teamCode) {
-        // TODO get team Members Based on the team code from server
-        if (teamCode === 0) { // soccer
-            return [
-                {'name': "علی", 'address': 'http://pngimg.com/uploads/fcb_logo/fcb_logo_PNG4.png', "position": "gk"},
-                {'name': "علی", 'address': 'http://pngimg.com/uploads/fcb_logo/fcb_logo_PNG4.png', "position": "dc"},
-                {'name': "علی", 'address': 'http://pngimg.com/uploads/fcb_logo/fcb_logo_PNG4.png', "position": "dr"},
-                {'name': "علی", 'address': 'http://pngimg.com/uploads/fcb_logo/fcb_logo_PNG4.png', "position": "dl"},
-                {'name': "علی", 'address': 'http://pngimg.com/uploads/fcb_logo/fcb_logo_PNG4.png', "position": "mr"},
-                {'name': "علی", 'address': 'http://pngimg.com/uploads/fcb_logo/fcb_logo_PNG4.png', "position": 'mc'},
-                {'name': "علی", 'address': 'http://pngimg.com/uploads/fcb_logo/fcb_logo_PNG4.png', "position": "ml"},
-                {'name': "علی", 'address': 'http://pngimg.com/uploads/fcb_logo/fcb_logo_PNG4.png', "position": "fc"},
-                {'name': "علی", 'address': 'http://pngimg.com/uploads/fcb_logo/fcb_logo_PNG4.png', "position": "fl"},
-                {'name': "علی", 'address': 'http://pngimg.com/uploads/fcb_logo/fcb_logo_PNG4.png', "position": "fr"},
-                {'name': "علی", 'address': 'http://pngimg.com/uploads/fcb_logo/fcb_logo_PNG4.png', "position": "coach"},
-                {
-                    'name': "علی",
-                    'address': 'http://pngimg.com/uploads/fcb_logo/fcb_logo_PNG4.png',
-                    "position": "gk_trainer"
-                },
-                {
-                    'name': "علی",
-                    'address': 'http://pngimg.com/uploads/fcb_logo/fcb_logo_PNG4.png',
-                    "position": "trainer"
-                },
-                {
-                    'name': "علی",
-                    'address': 'http://pngimg.com/uploads/fcb_logo/fcb_logo_PNG4.png',
-                    "position": "body_trainer"
-                },
-            ];
+    // this function will get team staffs
+    getTeamStaffs() {
+        let thisComp = this;
+        let staff_endpoint = '/api/staff/?team=' + this.props.teamCode.toString();
+        let lookupOptions = {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        };
+        fetch(staff_endpoint, lookupOptions)
+            .then(function (response) {
+                return response.json()
+            }).then(function (responseData) {
+            thisComp.setState({
+                staffs: responseData
+            });
+        }).catch(function (error) {
+            console.log('error', error)
+        });
+    }
+
+    // this function will get team members
+    getTeamMembers() {
+        let thisComp = this;
+        let players_endpoint = undefined;
+        if (this.props.teamInformation['type'] === 'football') {
+            players_endpoint = '/api/football-member/?team=' + this.props.teamCode.toString();
         } else {
-            return [
-                {'name': "علی", 'address': 'https://a.espncdn.com/i/teamlogos/nba/500/gs.png', "position": "bpg"},
-                {'name': "علی", 'address': 'https://a.espncdn.com/i/teamlogos/nba/500/gs.png', "position": "bsg"},
-                {'name': "علی", 'address': 'https://a.espncdn.com/i/teamlogos/nba/500/gs.png', "position": "bsf"},
-                {'name': "علی", 'address': 'https://a.espncdn.com/i/teamlogos/nba/500/gs.png', "position": "bpf"},
-                {'name': "علی", 'address': 'https://a.espncdn.com/i/teamlogos/nba/500/gs.png', "position": "bc"},
-                {'name': "علی", 'address': 'https://a.espncdn.com/i/teamlogos/nba/500/gs.png', "position": 'coach'},
-                {'name': "علی", 'address': 'https://a.espncdn.com/i/teamlogos/nba/500/gs.png', "position": "trainer"},
-                {'name': "علی", 'address': 'https://a.espncdn.com/i/teamlogos/nba/500/gs.png', "position": "body_trainer"},
-            ];
+            players_endpoint = '/api/basketball-member/?team=' + this.props.teamCode.toString();
         }
+        let lookupOptions = {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        };
+        fetch(players_endpoint, lookupOptions)
+            .then(function (response) {
+                return response.json()
+            }).then(function (responseData) {
+            thisComp.setState({
+                members: responseData,
+                showMembers: responseData,
+            });
+        }).catch(function (error) {
+            console.log('error', error)
+        });
     }
 
-    getClubName(teamCode) {
-        // TODO get club name from server
-        if (teamCode === 0){
-            return "بارسلونا";
-        } else {
-            return "گلدن استیت";
-        }
-    }
+  }
 
-    getLogo(teamCode) {
-        // TODO get club logo from server
-        if (teamCode === 0){
-            return "http://pngimg.com/uploads/fcb_logo/fcb_logo_PNG4.png";
-        } else {
-            return "https://a.espncdn.com/i/teamlogos/nba/500/gs.png";
-        }
-    }
-
-    getSport(teamCode) {
-        // TODO get sport type by team code from server
-        if (teamCode === 0){
-            return "soccer";
-        }  else {
-            return "basketball";
-        }
-    }
-
-}
-
-export default withStyles(styles, { withTheme: true })(Members);
+export default withStyles(styles, {withTheme: true})(Members);

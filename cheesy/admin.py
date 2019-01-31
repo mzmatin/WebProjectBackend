@@ -10,5 +10,6 @@ admin.site.register(FootballPlayer)
 admin.site.register(BasketballPlayer)
 admin.site.register(FootballPlayerStat)
 admin.site.register(BasketballPlayerStat)
-
+admin.site.register(Staff)
+admin.site.register(Match)
 

@@ -2,6 +2,7 @@ import React from 'react';
 import MatchComponentChild from "./MatchComponentChild";
 import PaperSheet from "./PaperSheet";
 import Paper from "@material-ui/core/Paper/Paper";
+import {withRouter} from "react-router-dom";
 
 
 class MatchesList extends React.Component {
@@ -17,6 +18,10 @@ class MatchesList extends React.Component {
                     address2={this.props.matches[i]["address2"]} name2={this.props.matches[i]["name2"]}
                     result={this.props.matches[i]["result"]}
                     date={this.props.matches[i]["subtitle"]}
+                    onClick={()=>{
+                        let path = 'match/' + this.props.matches[i]['pk'].toString();
+                        this.props.history.push(path);
+                    }}
                 />} />
             );
         }
@@ -29,4 +34,4 @@ class MatchesList extends React.Component {
     }
 }
 
-export default (MatchesList);
+export default withRouter(MatchesList);

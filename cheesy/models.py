@@ -95,6 +95,9 @@ class Staff(models.Model):
     position = models.CharField(max_length=20)
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return self.name
+
 
 class FootballPlayerStat(models.Model):
     goals = models.IntegerField()
@@ -130,11 +133,21 @@ class Match(models.Model):
     date = models.DateTimeField()
     stadium = models.CharField(max_length=30)
     week = models.IntegerField()
-    home_score = models.IntegerField(null=True)
-    away_score = models.IntegerField(null=True)
+    home_score = models.IntegerField(null=True, blank=True)
+    away_score = models.IntegerField(null=True, blank=True)
     home = models.ForeignKey(Team, on_delete=models.CASCADE, related_name="home")
     away = models.ForeignKey(Team, on_delete=models.CASCADE, related_name="away")
     league = models.ForeignKey(League, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.home.name + ":" + str(self.home_score) + "-" + self.away.name + ':' + str(self.away_score)
+
+    def save(self, *args, **kwargs):
+        if not self.home_score and self.home_score != 0:
+            self.home_score = None
+        if not self.away_score and self.away_score != 0:
+            self.away_score = None
+        super(Match, self).save(*args, **kwargs)
 
 
 class Event(models.Model):
@@ -239,6 +252,9 @@ class News(models.Model):
     text = models.TextField()
     summary = models.TextField()
     picture_link = models.URLField()
+    likes = models.IntegerField(default=0)
+    dislikes = models.IntegerField(default=0)
+    seen = models.IntegerField(default=0)
 
 
 class Tag(models.Model):
@@ -255,12 +271,16 @@ class Comment(models.Model):
     text = models.TextField()
     news = models.ForeignKey(News, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    likes = models.IntegerField(default=0)
+    dislikes = models.IntegerField(default=0)
 
 
 class Reply(models.Model):
     text = models.TextField()
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     comment = models.ForeignKey(Comment, on_delete=models.CASCADE)
+    likes = models.IntegerField(default=0)
+    dislikes = models.IntegerField(default=0)
 
 
 class Profile(models.Model):
