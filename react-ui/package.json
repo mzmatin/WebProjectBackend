@@ -38,7 +38,8 @@
     "sendemail": "^3.4.0",
     "styled-components": "^4.1.2",
     "typeface-roboto": "0.0.54",
-    "whatwg-fetch": "^3.0.0"
+    "whatwg-fetch": "^3.0.0",
+    "query-string": "latest"
   },
   "scripts": {
     "start": "react-scripts start",

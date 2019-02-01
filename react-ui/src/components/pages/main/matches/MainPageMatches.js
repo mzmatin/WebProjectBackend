@@ -20,6 +20,7 @@ class MainPageMatches extends React.Component {
         super(props);
         this.state ={
             value : 0,
+            allMatches: null,
         }
     }
 
@@ -31,6 +32,14 @@ class MainPageMatches extends React.Component {
     handleChangeIndex = index => {
         this.setState({ value: index });
     };
+
+    componentDidMount() {
+        this.getAllMatches();
+    }
+
+    getAllMatches(){
+
+    }
 
 
     render() {

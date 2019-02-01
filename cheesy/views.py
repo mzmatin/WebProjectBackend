@@ -16,6 +16,7 @@ from WebProject import settings
 from .models import *
 from .serializers import *
 import requests
+from django.views.decorators.csrf import csrf_exempt
 
 
 @api_view(['GET'])
@@ -60,7 +61,7 @@ class SendMail(APIView):
             token=userVerifyToken
         ).save()
 
-        authLink = 'http://localhost:3000/signupres/?name='+userName+'&email='+userEmail+'&pass='+userPassword+'&token='+userVerifyToken
+        authLink = 'http://localhost:8000/signupres/?name=' + userName + '&email=' + userEmail + '&pass=' + userPassword + '&token=' + userVerifyToken
         msg_plain = render_to_string('authMail.txt', {'link': authLink})
         msg_html = render_to_string('authMail.html', {'link': authLink})
 
@@ -93,12 +94,11 @@ class AuthMail(APIView):
             }
             r = requests.post('http://127.0.0.1:8000/api/users/', data=userData)
             if r.status_code == 201:
-                return Response("{\"success\":true,\"status\":" + str(r.status_code)+"}")
+                return Response("{\"success\":true,\"status\":" + str(r.status_code) + "}")
             else:
-                return Response("{\"success\":false,\"status\":" + str(r.status_code)+"}")
+                return Response("{\"success\":false,\"status\":" + str(r.status_code) + "}")
         except UnAuthUser.DoesNotExist:
             return Response("{\"success\":false}")
-
 
 
 class FootballPlayerViewSet(viewsets.ModelViewSet):

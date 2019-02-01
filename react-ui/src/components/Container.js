@@ -60,7 +60,6 @@ class Container extends React.Component{
                 <JssProvider generateClassName={generateClassName}>
                     <div className={classes.baseContainer}>
                         <div className={classes.appContainer}>
-                            <BrowserRouter>
                                 <Switch>
                                     <Route path={'/'} component={MainPage} exact/>
                                     <Route path={'/player/football/:id'} component={PlayerPage}/>
@@ -76,7 +75,6 @@ class Container extends React.Component{
                                     <Route path={'/signupres'} component={SignUpResultPage}/>
                                     <Route path={'/player/:id'} component={PlayerPage}/>
                                 </Switch>
-                            </BrowserRouter>
 
                         </div>
                     </div>
