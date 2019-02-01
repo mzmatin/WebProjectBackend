@@ -254,3 +254,46 @@ class NewsViewSet(viewsets.ModelViewSet):
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
+
+
+class AddCommentViewSet(viewsets.ModelViewSet):
+    queryset = Comment.objects.all()
+    serializer_class = NewCommentSerializer
+
+
+class RelatedNewsViewSet(viewsets.ModelViewSet):
+    queryset = News.objects.all()
+    serializer_class = RelatedNewsSerializer
+
+    def list(self, request, *args, **kwargs):
+        player = request.GET.get('player', None)
+        sport = request.GET.get('sport', None)
+        t_id = request.GET.get('team', None)
+        queryset = News.objects.all()
+        if t_id:
+            team = Team.objects.get(pk=t_id)
+            queryset_team_name = list(News.objects.filter(Q(title__contains=" " + team.name + " ") |
+                                                          Q(text__contains=" " + team.name + " ")))
+            queryset_player_name = []
+            if team.type == 'f':
+                players = team.footballplayer_set.all()
+            else:
+                players = team.basketballplayer_set.all()
+            for item in players:
+                queryset_player_name.append(list(News.objects.filter(Q(title__contains=" " + item.name + " ") |
+                                                                     Q(text__contains=" " + item.name + " "))))
+            queryset = list(set(queryset_team_name).union(queryset_team_name))
+        if player and sport:
+            if sport == 'f':
+                player_name = FootballPlayer.objects.get(pk=player).name
+            else:
+                player_name = BasketballPlayer.objects.get(pk=player).name
+            player_name = " " + player_name + " "
+            queryset = queryset.filter(Q(title__contains=player_name) | Q(text__contains=player_name))
+        serial = RelatedNewsSerializer(queryset, many=True)
+        return Response(data=serial.data)
+
+
+class NewsSummaryViewSet(viewsets.ModelViewSet):
+    queryset = News.objects.all()
+    serializer_class = NewsSummarySerializer

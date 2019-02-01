@@ -31,32 +31,56 @@ class TeamPage extends React.Component {
             selectedValue: 'a',
             teamInformation: null,
             matches: null,
+            relatedNews: null,
             opponentName: '',
         };
         this.id = props.match.params.id;
     }
 
     handleChange = event => {
-        this.setState({selectedValue: event.target.value});
+        this.setState({selectedValue: event.target.value}, this.getTeamMatches);
     };
 
     handleOpponentChange = event => {
         if (event.key === 'Enter') {
             const input = event.target.value;
+            console.log(input);
             this.setState({
                 opponentName: input,
-            });
+            }, this.getTeamMatches);
         }
     };
 
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        this.getTeamMatches()
+    // componentDidUpdate(prevProps, prevState, snapshot) {
+    //     this.getTeamMatches();
+    // }
+
+    getRelatedNews() {
+        let thisComp = this;
+        let endpoint = '/api/related-news/?team=' + thisComp.id.toString();
+        let lookupOptions = {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        };
+        fetch(endpoint, lookupOptions)
+            .then(function (response) {
+                return response.json()
+            }).then(function (responseData) {
+            thisComp.setState({
+                relatedNews: responseData
+            });
+        }).catch(function (error) {
+            console.log('error', error)
+        });
     }
 
     render() {
         const {classes} = this.props;
         const newsList = this.getRelatedTeamNews(this.id);
-        if (this.state.teamInformation !== null && this.state.matches !== null) {
+        if (this.state.teamInformation !== null && this.state.matches !== null && this.state.relatedNews !== null) {
             return (
                 <div className={classes.teamPageContainer}>
                     <Members teamCode={this.id} teamInformation={this.state.teamInformation}/>
@@ -107,7 +131,7 @@ class TeamPage extends React.Component {
                             باخت
                             <MatchesList matches={this.state.matches} height={'60vh'}/>
                         </div>
-                        <Grid listItems={newsList} listTitle={"اخبار مرتبط"} width={'auto'} columns={2}/>
+                        <Grid listItems={this.state.relatedNews} listTitle={"اخبار مرتبط"} width={'auto'} columns={2}/>
                     </div>
                 </div>
             );
@@ -120,6 +144,7 @@ class TeamPage extends React.Component {
     componentDidMount() {
         this.getTeamInformation();
         this.getTeamMatches();
+        this.getRelatedNews();
     }
 
     getTeamMatches() {
@@ -138,7 +163,7 @@ class TeamPage extends React.Component {
                 endpoint += '&lost=1';
                 break;
         }
-        if (thisComp.state.opponentName !== ''){
+        if (thisComp.state.opponentName !== '') {
             endpoint += '&team2=' + thisComp.state.opponentName;
         }
         let lookupOptions = {

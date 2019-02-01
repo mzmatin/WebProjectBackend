@@ -8,21 +8,18 @@ from .models import FootballPlayer, UnAuthUser
 
 
 class UserSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = User
-        fields = ('username', 'email')
+        fields = ('username', 'email', 'pk')
 
 
 class UnAuthUserSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = UnAuthUser
         fields = '__all__'
 
 
 class UserSerializerWithToken(serializers.ModelSerializer):
-
     token = serializers.SerializerMethodField()
     password = serializers.CharField(write_only=True)
 
@@ -286,3 +283,41 @@ class NewsSerializer(serializers.ModelSerializer):
                 comments.append(CommentSerializer(item).data)
             )
         return comments
+
+
+class NewCommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = '__all__'
+
+
+class RelatedNewsSerializer(serializers.ModelSerializer):
+    text = serializers.CharField(source='title')
+    address = serializers.URLField(source='picture_link')
+    subtitle = serializers.SerializerMethodField()
+    rel_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = News
+        fields = ('text', 'address', 'rel_url', 'subtitle')
+
+    @staticmethod
+    def get_rel_url(obj):
+        return '/news/' + str(obj.pk)
+
+    @staticmethod
+    def get_subtitle(obj):
+        return str(obj.publish_date)
+
+
+class NewsSummarySerializer(serializers.ModelSerializer):
+    time = serializers.DateTimeField(source='publish_date')
+    rel_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = News
+        fields = ('title', 'time', 'summary', 'rel_url')
+
+    @staticmethod
+    def get_rel_url(obj):
+        return '/news/' + str(obj.pk)

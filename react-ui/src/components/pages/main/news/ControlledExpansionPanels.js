@@ -6,6 +6,7 @@ import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import div from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import {withRouter} from "react-router-dom";
 
 const styles = theme => ({
     root: {
@@ -22,8 +23,8 @@ const styles = theme => ({
     },
     newsLink: {
         textDecoration: 'none',
-        '&:link':{color:'black'},
-        '&:visited':{color:'grey'},
+        '&:link': {color: 'black'},
+        '&:visited': {color: 'grey'},
     }
 });
 
@@ -40,15 +41,19 @@ class ControlledExpansionPanels extends React.Component {
 
 
     render() {
-        const { classes } = this.props;
-        const { expanded } = this.state;
+        const {classes} = this.props;
+        const {expanded} = this.state;
         let news_list = [];
 
-        for (let i = 0; i < this.props.news.length; i++){
+        for (let i = 0; i < this.props.news.length; i++) {
             news_list.push(
-                <ExpansionPanel expanded={expanded === 'panel' + i.toString()} onChange={this.handleChange('panel' + i.toString())} key={i} dir={"rtl"}>
-                    <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                        <div className={classes.heading}><a className={classes.newsLink} target="_blank" rel="noopener noreferrer" href={this.props.news[i]["title"]}>{this.props.news[i]["title"]}</a></div>
+                <ExpansionPanel expanded={expanded === 'panel' + i.toString()}
+                                onChange={this.handleChange('panel' + i.toString())} key={i} dir={"rtl"}>
+                    <ExpansionPanelSummary expandIcon={<ExpandMoreIcon/>}>
+                        <div className={classes.heading} onClick={() => {
+                            this.props.history.push(this.props.news[i]['rel_url']);
+                        }
+                        }>{this.props.news[i]["title"]}</div>
                         <div className={classes.secondaryHeading}>{this.props.news[i]["time"]}</div>
                     </ExpansionPanelSummary>
                     <ExpansionPanelDetails>
@@ -61,7 +66,7 @@ class ControlledExpansionPanels extends React.Component {
         }
 
         return (
-            <div className={classes.root} style={{overflow: 'auto', height:'auto'}} >
+            <div className={classes.root} style={{overflow: 'auto', height: 'auto'}}>
                 {news_list}
             </div>
         );
@@ -72,4 +77,4 @@ ControlledExpansionPanels.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(ControlledExpansionPanels);
+export default withRouter(withStyles(styles)(ControlledExpansionPanels));

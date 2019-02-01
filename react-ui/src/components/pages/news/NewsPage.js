@@ -216,7 +216,7 @@ class NewsPage extends React.Component {
         if (this.state.news !== null) {
             return (
                 <div className={classes.root}>
-                    <NewsMain newsComments={this.state.newsComments} news={this.state.news}
+                    <NewsMain newsComments={this.state.newsComments} news={this.state.news} id={this.id}
                               userAvatar={'https://pickaface.net/gallery/avatar/unr_sample_161118_2054_ynlrg.png'}/>
                     <RTL>
                         <Grid listItems={newsList} listTitle={"اخبار مرتبط"} width={'auto'} columns={2}/>

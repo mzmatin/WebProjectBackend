@@ -19,7 +19,9 @@ router.register(r'league', LeagueViewSet)
 router.register(r'team-stat', TeamStatViewSet)
 router.register(r'news', NewsViewSet)
 router.register(r'comment', CommentViewSet)
-
+router.register(r'add-comment', AddCommentViewSet)
+router.register(r'related-news', RelatedNewsViewSet)
+router.register(r'summary-news', NewsSummaryViewSet)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.

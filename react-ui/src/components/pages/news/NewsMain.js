@@ -52,8 +52,7 @@ const styles = theme => ({
         color: 'grey',
         justifyContent: 'space-between',
     },
-    newsInfoSection: {
-    },
+    newsInfoSection: {},
     newsBody: {
         textAlign: 'justify',
         padding: theme.spacing.unit * 3,
@@ -61,7 +60,7 @@ const styles = theme => ({
     },
     viewsCount: {
         position: 'relative',
-        '&::before':{
+        '&::before': {
             content: '\\F06E',
             fontFamily: 'FontAwesome',
             fontStyle: 'normal',
@@ -149,6 +148,8 @@ class NewsMain extends React.Component {
     state = {
         like: false,
         disLike: false,
+        commentText: '',
+        user: null,
     };
 
     handleTagChipClick = (event, label) => {
@@ -158,14 +159,20 @@ class NewsMain extends React.Component {
 
     handleLike = () => {
         //TODO: request for like
-        this.setState({like : !this.state.like, disLike : false});
+        this.setState({like: !this.state.like, disLike: false});
         console.log("clicked on like ")
 
     };
 
+    handleCommentChange = (e) => {
+        this.setState({
+            commentText: e.target.value
+        });
+    }
+
     handleDisLike = () => {
         //TODO: request for disLike
-        this.setState({disLike : !this.state.disLike, like: false});
+        this.setState({disLike: !this.state.disLike, like: false});
         console.log("clicked on dislike ")
 
     };
@@ -175,29 +182,75 @@ class NewsMain extends React.Component {
         console.log("clicked on source " + label);
     };
 
+    componentDidMount() {
+        if (localStorage.getItem('token'))
+            fetch('http://localhost:8000/api/current_user/', {
+                headers: {
+                    Authorization: `JWT ${localStorage.getItem('token')}`
+                }
+            })
+                .then(res => res.json())
+                .then(json => {
+                    console.log(json);
+                    this.setState({user: json});
+                });
+    }
+
+
+    handleComment = () => {
+        if (localStorage.getItem('token')) {
+
+            fetch('http://localhost:8000/api/add-comment/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `JWT ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify({
+                    text: this.state.commentText,
+                    likes: 0,
+                    dislikes: 0,
+                    news: this.props.id,
+                    user: this.state.user.pk
+                })
+            })
+                .then(res => res.json())
+                .then(json => {
+                    this.setState({showForm: false})
+                });
+        }
+        else{
+
+        }
+    };
+
     render() {
-        const { classes } = this.props;
-        const { like, disLike } = this.state;
+        const {classes} = this.props;
+        const {like, disLike} = this.state;
 
         let comments = [];
         for (let i = 0; i < this.props.newsComments.length; i++) {
             if (this.props.newsComments[i] !== null)
                 comments.push(
-                    <Comment key={i} userAvatar ={this.props.userAvatar} comment={this.props.newsComments[i]}/>
+                    <Comment key={i} userAvatar={this.props.userAvatar} comment={this.props.newsComments[i]}/>
                 )
         }
 
         let resources = [];
         for (let i = 0; i < this.props.news.resources.length; i++) {
             resources.push(
-                <Chip key={i} onClick={(e) => {this.handleSourceChipClick(e, this.props.news.resources[i])}} label={this.props.news.resources[i]} className={classes.resourceChip} variant="outlined" />
+                <Chip key={i} onClick={(e) => {
+                    this.handleSourceChipClick(e, this.props.news.resources[i])
+                }} label={this.props.news.resources[i]} className={classes.resourceChip} variant="outlined"/>
             )
         }
 
         let tags = [];
         for (let i = 0; i < this.props.news.tags.length; i++) {
             tags.push(
-                <Chip key={i} onClick={(e) => {this.handleTagChipClick(e, this.props.news.tags[i])}} label={this.props.news.tags[i]} className={classes.tagChip} variant="outlined" />
+                <Chip key={i} onClick={(e) => {
+                    this.handleTagChipClick(e, this.props.news.tags[i])
+                }} label={this.props.news.tags[i]} className={classes.tagChip} variant="outlined"/>
             )
         }
 
@@ -210,7 +263,7 @@ class NewsMain extends React.Component {
                     <div className={classes.cardSection}>
                         <CardMedia
                             className={classes.media}
-                            image = {this.props.news.imageUrl}
+                            image={this.props.news.imageUrl}
                             title={this.props.news.title}
                         />
                     </div>
@@ -246,21 +299,24 @@ class NewsMain extends React.Component {
                         {this.props.news.content}
                     </Typography>
                     <div className={classes.likeContainer}>
-                        <Button onClick={this.handleLike} variant="contained" color="default" className={classes.button}>
+                        <Button onClick={this.handleLike} variant="contained" color="default"
+                                className={classes.button}>
                             <FontAwesomeIcon className={classes.rightIcon}
-                                icon="thumbs-up"
-                                color={like ? 'green' : 'grey'}
-                                size="2sm"
+                                             icon="thumbs-up"
+                                             color={like ? 'green' : 'grey'}
+                                             size="2sm"
                             />
                             {' '}{<PersianNumber>{String(this.props.news.likeCount + (like ? 1 : 0))}</PersianNumber>}
                         </Button>
-                        <Button onClick={this.handleDisLike} variant="contained" color="default" className={classes.button}>
+                        <Button onClick={this.handleDisLike} variant="contained" color="default"
+                                className={classes.button}>
                             <FontAwesomeIcon className={classes.rightIcon}
-                                icon="thumbs-down"
-                                color={disLike ? 'red' : 'grey'}
-                                size="2sm"
+                                             icon="thumbs-down"
+                                             color={disLike ? 'red' : 'grey'}
+                                             size="2sm"
                             />
-                            {' '}{<PersianNumber>{String(this.props.news.disLikeCount + (disLike ? 1 : 0))}</PersianNumber>}
+                            {' '}{
+                            <PersianNumber>{String(this.props.news.disLikeCount + (disLike ? 1 : 0))}</PersianNumber>}
                         </Button>
                     </div>
                     <div className={classes.tagChipContainer}>
@@ -272,11 +328,11 @@ class NewsMain extends React.Component {
                         <span className={classes.title}>نظرات کاربران</span>
                     </div>
                     <div className={classes.flex}>
-                        <ImageAvatars avatar = {this.props.userAvatar} size = {50}/>
+                        <ImageAvatars avatar={this.props.userAvatar} size={50}/>
                         <div className={classes.form}>
                             <form>
                                 <TextField
-                                    onChange={this.handleReplyChange}
+                                    onChange={this.handleCommentChange}
                                     fullWidth
                                     id="commentReply"
                                     placeholder={'نظر شما'}
@@ -288,13 +344,13 @@ class NewsMain extends React.Component {
                                 />
                             </form>
                             <div className={classes.flexMarginBottom}>
-                                <Button onClick={this.handleReplySend} variant="contained" className={classes.buttonSend}>
+                                <Button onClick={this.handleComment} variant="contained" className={classes.buttonSend}>
                                     {' '}{'ارسال'}
                                 </Button>
                             </div>
                         </div>
                     </div>
-                        {comments}
+                    {comments}
                 </Paper>
             </div>
 
