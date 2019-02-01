@@ -1,3 +1,5 @@
+import datetime
+
 from django.contrib.auth.models import User
 from django.db import models
 
@@ -10,6 +12,7 @@ class League(models.Model):
     name = models.CharField(max_length=30)
     season_pre = models.IntegerField()
     season_post = models.IntegerField()
+    weeks = models.IntegerField(default=32)
 
     def __str__(self):
         return self.name + " " + str(self.season_pre) + '-' + str(self.season_post)
@@ -44,6 +47,9 @@ class TeamStat(models.Model):
     goals_difference = models.IntegerField()
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
     league = models.ForeignKey(League, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.team.name + "-" + str(self.league)
 
 
 class Player(models.Model):
@@ -243,7 +249,7 @@ class Media(models.Model):
 
 class News(models.Model):
     title = models.CharField(max_length=50)
-    TYPE_CHOICES=(
+    TYPE_CHOICES = (
         ('b', 'basketball'),
         ('f', 'football'),
     )
@@ -256,15 +262,24 @@ class News(models.Model):
     dislikes = models.IntegerField(default=0)
     seen = models.IntegerField(default=0)
 
+    def __str__(self):
+        return self.title
+
 
 class Tag(models.Model):
     name = models.CharField(max_length=30)
     news = models.ForeignKey(News, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return self.name + '-' + self.news.title
+
 
 class Source(models.Model):
     name = models.CharField(max_length=30)
     news = models.ForeignKey(News, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name + '-' + self.news.title
 
 
 class Comment(models.Model):
@@ -273,6 +288,10 @@ class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     likes = models.IntegerField(default=0)
     dislikes = models.IntegerField(default=0)
+    publish_date = models.DateTimeField(default=datetime.datetime.now)
+
+    def __str__(self):
+        return self.user.username + '-' + str(self.pk) + '-' + self.text
 
 
 class Reply(models.Model):
@@ -281,8 +300,15 @@ class Reply(models.Model):
     comment = models.ForeignKey(Comment, on_delete=models.CASCADE)
     likes = models.IntegerField(default=0)
     dislikes = models.IntegerField(default=0)
+    publish_date = models.DateTimeField(default=datetime.datetime.now)
+
+    def __str__(self):
+        return self.user.username + '-' + str(self.pk) + '-' + self.text
 
 
 class Profile(models.Model):
     avatar = models.ImageField(upload_to='user_images/')
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+
+    def __str__(self):
+        return self.user.username

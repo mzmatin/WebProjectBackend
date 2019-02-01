@@ -13,6 +13,9 @@ router.register(r'match-tile', MatchTileViewSet)
 router.register(r'football-member', FootballMemberViewSet)
 router.register(r'basketball-member', BasketballMemberViewSet)
 router.register(r'league', LeagueViewSet)
+router.register(r'team-stat', TeamStatViewSet)
+router.register(r'news', NewsViewSet)
+router.register(r'comment', CommentViewSet)
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [

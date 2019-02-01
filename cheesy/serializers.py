@@ -58,8 +58,8 @@ class BasketballPlayerStatSerializer(serializers.ModelSerializer):
     class Meta:
         model = BasketballPlayerStat
         fields = (
-        'scores', 'triple_points', 'double_points', 'rebounds', 'max_score_in_one_game', 'best', 'league_name',
-        'league_pre', 'league_post')
+            'scores', 'triple_points', 'double_points', 'rebounds', 'max_score_in_one_game', 'best', 'league_name',
+            'league_pre', 'league_post')
 
 
 class TeamSerializer(serializers.ModelSerializer):
@@ -102,7 +102,7 @@ class MatchTileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Match
-        fields = ('type', 'name1', 'name2', 'address1', 'address2', 'result', 'subtitle', 'pk')
+        fields = ('type', 'name1', 'name2', 'address1', 'address2', 'result', 'subtitle', 'pk', 'league', 'week')
 
     @staticmethod
     def get_type(obj):
@@ -128,7 +128,7 @@ class LeagueSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = League
-        fields = ('text', 'address', 'subtitle', 'rel_url')
+        fields = ('text', 'address', 'subtitle', 'rel_url', 'weeks')
 
     @staticmethod
     def get_subtitle(obj):
@@ -137,3 +137,108 @@ class LeagueSerializer(serializers.ModelSerializer):
     @staticmethod
     def get_rel_url(obj):
         return '/league/' + str(obj.pk)
+
+
+class TeamStatSerializer(serializers.ModelSerializer):
+    team_name = serializers.CharField(source='team.name')
+    team_avatar = serializers.CharField(source='team.avatar.url')
+
+    class Meta:
+        model = TeamStat
+        fields = (
+            'points', 'matches', 'won', 'drawn', 'lost', 'goals_for', 'goals_against', 'goals_difference', 'team_name',
+            'team_avatar')
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    commentBody = serializers.SerializerMethodField()
+    commentReplies = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Comment
+        fields = ('commentBody', 'commentReplies')
+
+    def get_commentBody(self, obj):
+        return {
+            'userName': obj.user.username,
+            'userAvatarUrl': Profile.objects.get(user=obj.user).avatar.url,
+            'text': obj.text,
+            "time": {
+                'year': obj.publish_date.year,
+                'month': obj.publish_date.month,
+                'day': obj.publish_date.day,
+                'second': obj.publish_date.second,
+                'minute': obj.publish_date.minute,
+                'hour': obj.publish_date.hour,
+            },
+            "likeCount": obj.likes,
+            "dislikeCount": obj.dislikes,
+        }
+
+    def get_commentReplies(self, obj):
+        replies = []
+        for item in list(Reply.objects.filter(comment=obj.pk)):
+            replies.append({
+                'userName': item.user.username,
+                'userAvatarUrl': Profile.objects.get(user=item.user).avatar.url,
+                'text': item.text,
+                "time": {
+                    'year': item.publish_date.year,
+                    'month': item.publish_date.month,
+                    'day': item.publish_date.day,
+                    'second': item.publish_date.second,
+                    'minute': item.publish_date.minute,
+                    'hour': item.publish_date.hour,
+                },
+                "likeCount": item.likes,
+                "dislikeCount": item.dislikes,
+            })
+        return replies
+
+
+class NewsSerializer(serializers.ModelSerializer):
+    time = serializers.SerializerMethodField()
+    content = serializers.CharField(source='text')
+    viewsCount = serializers.IntegerField(source='seen')
+    likeCount = serializers.IntegerField(source='likes')
+    disLikeCount = serializers.IntegerField(source='dislikes')
+    imageUrl = serializers.URLField(source='picture_link')
+    tags = serializers.SerializerMethodField()
+    resources = serializers.SerializerMethodField()
+    comments = serializers.SerializerMethodField()
+
+    class Meta:
+        model = News
+        fields = ('title', 'time', 'summary', 'content', 'viewsCount', 'likeCount', 'disLikeCount', 'imageUrl',
+                  'tags', 'resources', 'comments')
+
+    def get_time(self, obj):
+        return {
+            'year': obj.publish_date.year,
+            'month': obj.publish_date.month,
+            'day': obj.publish_date.day,
+            'second': obj.publish_date.second,
+            'minute': obj.publish_date.minute,
+            'hour': obj.publish_date.hour,
+        }
+
+    def get_tags(self, obj):
+        tag_names = []
+        for item in list(Tag.objects.filter(news=obj.pk)):
+            tag_names.append(item.name)
+        return tag_names
+
+    def get_resources(self, obj):
+        resources_names = []
+        for item in list(Source.objects.filter(news=obj.pk)):
+            resources_names.append(item.name)
+        return resources_names
+
+    def get_comments(self, obj):
+        comments = []
+        for item in list(Comment.objects.filter(news=obj.pk)):
+            print("jdssdsddsfdsdfkjghksdflgh ")
+            comments.append(
+                comments.append(CommentSerializer(item).data)
+            )
+        return comments

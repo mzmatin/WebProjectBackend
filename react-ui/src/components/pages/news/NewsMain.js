@@ -180,10 +180,11 @@ class NewsMain extends React.Component {
         const { like, disLike } = this.state;
 
         let comments = [];
-        for (let i = 0; i < this.props.news.comments.length; i++) {
-            comments.push(
-                <Comment key={i} userAvatar ={this.props.userAvatar} comment={this.props.news.comments[i]}/>
-            )
+        for (let i = 0; i < this.props.newsComments.length; i++) {
+            if (this.props.newsComments[i] !== null)
+                comments.push(
+                    <Comment key={i} userAvatar ={this.props.userAvatar} comment={this.props.newsComments[i]}/>
+                )
         }
 
         let resources = [];
@@ -225,17 +226,17 @@ class NewsMain extends React.Component {
                                     color="grey"
                                     size="2sm"
                                 />
-                                {' '}<PersianNumber>{this.props.news.viewsCount}</PersianNumber>
+                                {' '}<PersianNumber>{this.props.news.viewsCount.toString()}</PersianNumber>
                             </div>
                             <div className={classes.newsInfoSection}>
-                                <PersianNumber>{this.props.news.time.hour}</PersianNumber>
-                                {':'}<PersianNumber>{this.props.news.time.minute}</PersianNumber>
-                                {':'}<PersianNumber>{this.props.news.time.second}</PersianNumber>
+                                <PersianNumber>{this.props.news.time.hour.toString()}</PersianNumber>
+                                {':'}<PersianNumber>{this.props.news.time.minute.toString()}</PersianNumber>
+                                {':'}<PersianNumber>{this.props.news.time.second.toString()}</PersianNumber>
                             </div>
                             <div className={classes.newsInfoSection}>
-                                <PersianNumber>{this.props.news.time.day}</PersianNumber>
-                                {' '}{this.props.news.time.month}
-                                {' '}<PersianNumber>{this.props.news.time.year}</PersianNumber>
+                                <PersianNumber>{this.props.news.time.day.toString()}</PersianNumber>
+                                {' '}{this.props.news.time.month.toString()}
+                                {' '}<PersianNumber>{this.props.news.time.year.toString()}</PersianNumber>
                             </div>
                         </div>
                     </CardContent>

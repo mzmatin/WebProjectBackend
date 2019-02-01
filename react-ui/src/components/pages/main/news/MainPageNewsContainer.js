@@ -29,7 +29,7 @@ class MainPageNewsContainer extends React.Component{
                 ];
             }  else {
                 return [
-                    {"title": "فوتبال-۱", "time": "۱ ساعت پیش", "summary" :"خلاصه‌ی خبر ۱"},
+                    {"title": "فوتبال-1", "time": "۱ ساعت پیش", "summary" :"خلاصه‌ی خبر ۱"},
                     {"title": "فوتبال-۲", "time": "۲ ساعت پیش", "summary" :"خلاصه‌ی خبر ۲"},
                     {"title": "فوتبال-۳", "time": "۳ ساعت پیش", "summary" :"خلاصه‌ی خبر ۳"},
                     {"title": "فوتبال-۱", "time": "۱ ساعت پیش", "summary" :"خلاصه‌ی خبر ۱"},

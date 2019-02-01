@@ -76,13 +76,13 @@ class CommentReply extends React.Component {
                                 color="grey"
                                 size="2sm"
                             />
-                            {' '}<PersianNumber>{this.props.commentReply.time.day}</PersianNumber>
+                            {' '}<PersianNumber>{this.props.commentReply.time.day.toString()}</PersianNumber>
                             {' '}{this.props.commentReply.time.month}
-                            {' '}<PersianNumber>{this.props.commentReply.time.year}</PersianNumber>
+                            {' '}<PersianNumber>{this.props.commentReply.time.year.toString()}</PersianNumber>
                             {' '}{'ساعت'}
-                            {' '}<PersianNumber>{this.props.commentReply.time.hour}</PersianNumber>
-                            {':'}<PersianNumber>{this.props.commentReply.time.minute}</PersianNumber>
-                            {':'}<PersianNumber>{this.props.commentReply.time.second}</PersianNumber>
+                            {' '}<PersianNumber>{this.props.commentReply.time.hour.toString()}</PersianNumber>
+                            {':'}<PersianNumber>{this.props.commentReply.time.minute.toString()}</PersianNumber>
+                            {':'}<PersianNumber>{this.props.commentReply.time.second.toString()}</PersianNumber>
                         </div>
                         <div className={classes.likeContainer}>
                             <Button onClick={this.handleLike} variant="fab" color="default" className={classes.button}>

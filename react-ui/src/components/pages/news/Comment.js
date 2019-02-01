@@ -206,13 +206,13 @@ class Comment extends React.Component {
                                     color="grey"
                                     size="2sm"
                                 />
-                                {' '}<PersianNumber>{this.props.comment.commentBody.time.day}</PersianNumber>
-                                {' '}{this.props.comment.commentBody.time.month}
-                                {' '}<PersianNumber>{this.props.comment.commentBody.time.year}</PersianNumber>
+                                {' '}<PersianNumber>{this.props.comment.commentBody.time.day.toString()}</PersianNumber>
+                                {' '}{this.props.comment.commentBody.time.month.toString()}
+                                {' '}<PersianNumber>{this.props.comment.commentBody.time.year.toString()}</PersianNumber>
                                 {' '}{'ساعت'}
-                                {' '}<PersianNumber>{this.props.comment.commentBody.time.hour}</PersianNumber>
-                                {':'}<PersianNumber>{this.props.comment.commentBody.time.minute}</PersianNumber>
-                                {':'}<PersianNumber>{this.props.comment.commentBody.time.second}</PersianNumber>
+                                {' '}<PersianNumber>{this.props.comment.commentBody.time.hour.toString()}</PersianNumber>
+                                {':'}<PersianNumber>{this.props.comment.commentBody.time.minute.toString()}</PersianNumber>
+                                {':'}<PersianNumber>{this.props.comment.commentBody.time.second.toString()}</PersianNumber>
                             </div>
                             <div className={classes.likeContainer}>
                                 <Button onClick={this.openReply} variant="outlined" className={classes.replyButton}>

@@ -97,7 +97,11 @@ class MatchTileViewSet(viewsets.ModelViewSet):
         win = request.GET.get('win', None)
         lost = request.GET.get('lost', None)
         drawn = request.GET.get('drawn', None)
+        league = request.GET.get('league', None)
+        week = request.GET.get('week', None)
         queryset = Match.objects.all().order_by('-date')
+        if league and week:
+            queryset = queryset.filter(Q(league=league) & Q(week=week))
         if team1:
             queryset = queryset.filter(Q(home=team1) | Q(away=team1)).order_by('-date')
             if team2:
@@ -133,3 +137,26 @@ class LeagueViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(Q(season_post__lte=archive))
         serial = LeagueSerializer(queryset, many=True)
         return Response(data=serial.data)
+
+
+class TeamStatViewSet(viewsets.ModelViewSet):
+    queryset = TeamStat.objects.all()
+    serializer_class = TeamStatSerializer
+
+    def list(self, request, *args, **kwargs):
+        league = request.GET.get('league', None)
+        queryset = TeamStat.objects.all()
+        if league:
+            queryset = queryset.filter(Q(league=league)).order_by('-points')
+        serial = TeamStatSerializer(queryset, many=True)
+        return Response(data=serial.data)
+
+
+class NewsViewSet(viewsets.ModelViewSet):
+    queryset = News.objects.all()
+    serializer_class = NewsSerializer
+
+
+class CommentViewSet(viewsets.ModelViewSet):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
