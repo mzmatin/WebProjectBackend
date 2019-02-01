@@ -70,13 +70,14 @@ class Container extends React.Component{
                                     <Route path={'/news/:id'} component={NewsPage}/>
                                     <Route path={'/match/:id'} component={MatchPage}/>
                                     <Route path={'/team/:id'} component={TeamPage}/>
+                                    <Route path={'/signup'} component={SignUp}/>
+                                    <Route path={'/signin'}
+                                           render={(routeProps) => (<SignInPage {...routeProps} onLogIn={this.loggedIn} />)}/>
+                                    <Route path={'/signupres'} component={SignUpResultPage}/>
+                                    <Route path={'/player/:id'} component={PlayerPage}/>
                                 </Switch>
                             </BrowserRouter>
-                                <Route path={'/signup'} component={SignUp}/>
-                                <Route path={'/signin'}
-                                <Route path={'/signupres'} component={SignUpResultPage}/>
-                                <Route path={'/player/:id'} component={PlayerPage}/>
-                                       render={(routeProps) => (<SignInPage {...routeProps} onLogIn={this.loggedIn} />)}/>
+
                         </div>
                     </div>
                 </JssProvider>
