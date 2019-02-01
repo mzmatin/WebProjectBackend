@@ -14,6 +14,9 @@ import MainPage from "./pages/main/MainPage";
 import PlayerPage from "./pages/player/PlayerPage";
 import LeagueMainPage from "./pages/league/LeagueMainPage";
 import TeamPage from "./pages/TeamPage/TeamPage";
+import SignUp from "./pages/signup/SignUpPage";
+import SignInPage from "./pages/signin/SignInPage";
+import SignUpResultPage from "./pages/signup/SignUpResultPage";
 import LeaguePage from "./pages/league/LeaguePage";
 
 const generateClassName = createGenerateClassName({
@@ -33,12 +36,26 @@ const styles = theme => ({
 });
 
 class Container extends React.Component{
+    state = {
+            loggedIn: false,
+        };
+
+    loggedIn = () => {
+        this.setState({loggedIn: true});
+        console.log(this.state.loggedIn)
+    };
+
+    loggedOut = () => {
+        this.setState({loggedIn: false});
+        console.log(this.state.loggedIn)
+    };
+
     render() {
         const { classes} = this.props;
         return (
             <div>
                 <RTL>
-                    <AppNavBar />
+                    <AppNavBar onLogOut={this.loggedOut}/>
                 </RTL>
                 <JssProvider generateClassName={generateClassName}>
                     <div className={classes.baseContainer}>
@@ -53,8 +70,14 @@ class Container extends React.Component{
                                     <Route path={'/news/:id'} component={NewsPage}/>
                                     <Route path={'/match/:id'} component={MatchPage}/>
                                     <Route path={'/team/:id'} component={TeamPage}/>
+                                    <Route path={'/signup'} component={SignUp}/>
+                                    <Route path={'/signin'}
+                                           render={(routeProps) => (<SignInPage {...routeProps} onLogIn={this.loggedIn} />)}/>
+                                    <Route path={'/signupres'} component={SignUpResultPage}/>
+                                    <Route path={'/player/:id'} component={PlayerPage}/>
                                 </Switch>
                             </BrowserRouter>
+
                         </div>
                     </div>
                 </JssProvider>
