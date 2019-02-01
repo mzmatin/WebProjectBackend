@@ -24,11 +24,19 @@ import SearchIcon from '@material-ui/icons/Search';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import Menu from "@material-ui/core/Menu/Menu";
 import MenuItem from "@material-ui/core/MenuItem/MenuItem";
+import Button from "@material-ui/core/Button";
+import {Link} from "react-router-dom";
 
 
 const drawerWidth = 240;
 
 const styles = theme => ({
+    button: {
+        margin: theme.spacing.unit,
+        backgroundColor: 'transparent',
+        color: 'white',
+        alignSelf: 'center',
+    },
     root: {
         display: 'flex',
     },
@@ -159,10 +167,34 @@ class AppNavBar extends React.Component {
         this.setState({ open: false });
     };
 
+    handleLogout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        this.props.onLogOut();
+    };
+
     render() {
-        const { classes, theme } = this.props;
+        const { classes, theme, onLogOut } = this.props;
         const { anchorEl, open } = this.state;
         const isMenuOpen = Boolean(anchorEl);
+
+        const logged_out_nav = (
+            <div>
+                <Button component={Link} to={{ pathname: '/signin' }} className={classes.button}>
+                            {'ورود'}
+                </Button>
+                <Button component={Link} to={{ pathname: '/signup' }} className={classes.button}>
+                            {'عضویت'}
+                </Button>
+            </div>
+        );
+
+        const logged_in_nav = (
+            <Button onClick={this.handleLogout} className={classes.button}>
+                        {'خروچ'}
+            </Button>
+        );
+
 
         const renderMenu = (
             <Menu
@@ -196,19 +228,11 @@ class AppNavBar extends React.Component {
                             <MenuIcon />
                         </IconButton>
                         <img className={classes.logo} alt="logo" src={logo}/>
-                        <div className={classes.searchLeague}>
-                            <div className={classes.searchIcon}>
-                                <SearchIcon />
-                            </div>
-                            <InputBase
-                                placeholder="جست و جو..."
-                                classes={{
-                                    root: classes.inputRoot,
-                                    input: classes.inputInput,
-                                }}
-                            />
-                        </div>
+
                         <div className={classes.grow} />
+                        <div>
+                            {localStorage.getItem('token') != null ? logged_in_nav : logged_out_nav}
+                        </div>
                         <div className={classes.sectionDesktop}>
                             <IconButton
                                 style={!open ? {marginLeft: 24} : {}}
@@ -264,6 +288,7 @@ class AppNavBar extends React.Component {
 AppNavBar.propTypes = {
     classes: PropTypes.object.isRequired,
     theme: PropTypes.object.isRequired,
+    onLogOut: PropTypes.func.isRequired,
 };
 
 export default withStyles(styles, { withTheme: true })(AppNavBar);

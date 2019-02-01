@@ -5,6 +5,13 @@ from django.db import models
 # Create your models here.
 
 
+class UnAuthUser(models.Model):
+    userName = models.CharField(max_length=30)
+    password = models.CharField(max_length=40)
+    email = models.CharField(max_length=100)
+    token = models.CharField(max_length=30)
+
+
 class League(models.Model):
     picture_link = models.URLField()
     name = models.CharField(max_length=30)

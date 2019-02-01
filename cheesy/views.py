@@ -3,8 +3,102 @@ from rest_framework.response import Response
 from django.db.models import F
 from django.db.models import Q
 
+from django.contrib.sites import requests
+from django.core.mail import send_mail
+from django.shortcuts import render
+from django.template.loader import render_to_string
+from django.utils.crypto import get_random_string
+from rest_framework import viewsets, permissions, status
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from WebProject import settings
 from .models import *
 from .serializers import *
+import requests
+
+
+@api_view(['GET'])
+def current_user(request):
+    """
+    Determine the current user by their token, and return their data
+    """
+
+    serializer = UserSerializer(request.user)
+    return Response(serializer.data)
+
+
+class UserList(APIView):
+    """
+    Create a new user. It's called 'UserList' because normally we'd have a get
+    method here too, for retrieving a list of all User objects.
+    """
+
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request):
+        serializer = UserSerializerWithToken(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class SendMail(APIView):
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request):
+        userPassword = request.data['password']
+        userEmail = request.data['userEmail']
+        userName = request.data['username']
+        userVerifyToken = get_random_string(20)
+
+        UnAuthUser(
+            userName=userName,
+            password=userPassword,
+            email=userEmail,
+            token=userVerifyToken
+        ).save()
+
+        authLink = 'http://localhost:3000/signupres/?name='+userName+'&email='+userEmail+'&pass='+userPassword+'&token='+userVerifyToken
+        msg_plain = render_to_string('authMail.txt', {'link': authLink})
+        msg_html = render_to_string('authMail.html', {'link': authLink})
+
+        send_mail(
+            'Cheesy news account verification',
+            msg_plain,
+            settings.EMAIL_HOST_USER,
+            [userEmail],
+            html_message=msg_html,
+            fail_silently=False
+        )
+        return Response("{\"status\":\"success\"}", status=status.HTTP_200_OK)
+
+
+class AuthMail(APIView):
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request):
+        try:
+            user = UnAuthUser.objects.get(
+                userName=request.data['name'],
+                email=request.data['email'],
+                token=request.data['token'],
+                password=request.data['pass']
+            )
+            userData = {
+                'username': user.userName,
+                'password': user.password,
+                'email': user.email
+            }
+            r = requests.post('http://127.0.0.1:8000/api/users/', data=userData)
+            if r.status_code == 201:
+                return Response("{\"success\":true,\"status\":" + str(r.status_code)+"}")
+            else:
+                return Response("{\"success\":false,\"status\":" + str(r.status_code)+"}")
+        except UnAuthUser.DoesNotExist:
+            return Response("{\"success\":false}")
+
 
 
 class FootballPlayerViewSet(viewsets.ModelViewSet):

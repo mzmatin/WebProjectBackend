@@ -19,3 +19,15 @@ urlpatterns = [
     url(r'^', include(router.urls)),
     # url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]
+from django.urls import path
+from rest_framework_jwt.views import obtain_jwt_token
+
+from . import views
+
+urlpatterns = [
+    path('token-auth/', obtain_jwt_token),
+    path('current_user/', views.current_user),
+    path('users/', views.UserList.as_view()),
+    path('send_mail/', views.SendMail.as_view()),
+    path('auth_mail/', views.AuthMail.as_view()),
+]
