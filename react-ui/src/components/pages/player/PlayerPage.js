@@ -7,8 +7,10 @@ import PlayerStatTable from "./PlayerStatTable";
 import SimpleSelect from "../../SimpleSelect";
 import Grid from "../../utils/Grid";
 import 'whatwg-fetch'
+import Button from '@material-ui/core/Button';
 import cookie from 'react-cookies'
 import PersianNumber from "../../utils/PersianNumber";
+import AddIcon from "../TeamPage/MembersList";
 
 
 const styles = theme => ({
@@ -24,7 +26,7 @@ const styles = theme => ({
         flexDirection: 'row',
         justifyContent: 'space-evenly',
         alignItems: 'center',
-    }
+    },
 });
 
 
@@ -38,6 +40,7 @@ class PlayerPage extends React.Component {
             leagueNameList: null,
             leaguesTableStats: null,
             relatedNews: null,
+            user: null,
         };
         this.id = props.match.params.id;
     }
@@ -46,6 +49,7 @@ class PlayerPage extends React.Component {
         this.getInformation();
         this.getStats();
         this.getRelatedNews();
+        this.getUser();
     }
 
     render() {
@@ -61,6 +65,9 @@ class PlayerPage extends React.Component {
                         <div>
                             <PlayerAvatar text={this.state.generalInformation['name']}
                                           avatar={this.state.generalInformation['url']}/>
+                            <Button variant="contained" color="primary" onClick={this.addTofavorite}>
+                                دنبال
+                            </Button>
                         </div>
                         <div>
                             <PlayerTable information={this.state.generalInformation}/>
@@ -84,6 +91,64 @@ class PlayerPage extends React.Component {
         }
     }
 
+    getUser = () => {
+        if (localStorage.getItem('token'))
+            fetch('http://localhost:8000/api/current_user/', {
+                headers: {
+                    Authorization: `JWT ${localStorage.getItem('token')}`
+                }
+            })
+                .then(res => res.json())
+                .then(json => {
+                    console.log(json, 'user found');
+                    this.setState({user: json});
+                });
+    };
+
+    addTofavorite = () => {
+        if (localStorage.getItem('token')) {
+            if (window.location.href.includes('football')) {
+                console.log(this.id, 'player_id');
+                console.log(this.state.user.pk, 'user_id');
+                fetch('http://localhost:8000/api/favorite/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `JWT ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify({
+                        player: this.id,
+                        user: this.state.user.pk,
+                        sport: 'f',
+                    })
+                })
+                    .then(res => res.json())
+                    .then(json => {
+                        console.log(json);
+                    });
+            } else {
+                console.log(this.id, 'player_id');
+                console.log(this.state.user.pk, 'user_id');
+                fetch('http://localhost:8000/api/favorite/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `JWT ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify({
+                        player: this.id,
+                        user: this.state.user.pk,
+                        sport: 'b',
+                    })
+                })
+                    .then(res => res.json())
+                    .then(json => {
+                        console.log(json);
+                    });
+            }
+
+        }
+    };
 
     // returns players general information
     getInformation() {

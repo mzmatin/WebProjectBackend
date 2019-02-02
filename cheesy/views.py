@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from rest_framework import viewsets
 from rest_framework.response import Response
 from django.db.models import F
@@ -11,6 +12,7 @@ from django.utils.crypto import get_random_string
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework.utils import json
 from rest_framework.views import APIView
 from WebProject import settings
 from .models import *
@@ -193,6 +195,7 @@ class MatchTileViewSet(viewsets.ModelViewSet):
         drawn = request.GET.get('drawn', None)
         league = request.GET.get('league', None)
         week = request.GET.get('week', None)
+        user_id = request.GET.get('user', None)
         queryset = Match.objects.all().order_by('-date')
         if league and week:
             queryset = queryset.filter(Q(league=league) & Q(week=week))
@@ -209,7 +212,9 @@ class MatchTileViewSet(viewsets.ModelViewSet):
             elif lost:
                 queryset = queryset.filter((Q(home=team1) & Q(home_score__lt=F('away_score'))) |
                                            (Q(away=team1) & Q(away_score__lt=F('home_score'))))
-
+        if user_id:
+            teams = Profile.objects.get(user=user_id).teams.values_list('id', flat=True)
+            queryset = queryset.filter(Q(home__in=teams) | Q(away__in=teams))
         serial = MatchTileSerializer(queryset, many=True)
         return Response(data=serial.data)
 
@@ -269,6 +274,7 @@ class RelatedNewsViewSet(viewsets.ModelViewSet):
         player = request.GET.get('player', None)
         sport = request.GET.get('sport', None)
         t_id = request.GET.get('team', None)
+        news_id = request.GET.get('news', None)
         queryset = News.objects.all()
         if t_id:
             team = Team.objects.get(pk=t_id)
@@ -290,6 +296,8 @@ class RelatedNewsViewSet(viewsets.ModelViewSet):
                 player_name = BasketballPlayer.objects.get(pk=player).name
             player_name = " " + player_name + " "
             queryset = queryset.filter(Q(title__contains=player_name) | Q(text__contains=player_name))
+        if news_id:
+            queryset = queryset.get(pk=news_id).related_news
         serial = RelatedNewsSerializer(queryset, many=True)
         return Response(data=serial.data)
 
@@ -297,3 +305,51 @@ class RelatedNewsViewSet(viewsets.ModelViewSet):
 class NewsSummaryViewSet(viewsets.ModelViewSet):
     queryset = News.objects.all()
     serializer_class = NewsSummarySerializer
+
+    def list(self, request, *args, **kwargs):
+        sport = request.GET.get('sport', None)
+        queryset = News.objects.all()
+        if sport == 'f':
+            queryset = queryset.filter(Q(type='f')).order_by('-publish_date')
+        else:
+            queryset = queryset.filter(Q(type='b')).order_by('-publish_date')
+        serial = NewsSummarySerializer(queryset, many=True)
+        return Response(data=serial.data)
+
+
+class ProfileViewSet(viewsets.ModelViewSet):
+    queryset = Profile.objects.all()
+    serializer_class = ProfileSerializer
+
+    def create(self, request, *args, **kwargs):
+        team_id = request.data.get('team')
+        user_id = request.data.get('user')
+        player_id = request.data.get('player')
+        player_type = request.data.get('sport')
+        return_dict = {}
+        if user_id:
+            if team_id:
+                print('team=', team_id, 'user=', user_id)
+                profile = Profile.objects.get(user=user_id)
+                print(profile)
+                team = Team.objects.get(pk=team_id)
+                print(team)
+                profile.teams.add(team)
+                profile.save()
+                return_dict = {'status': True, 'code': 200}
+            if player_id and player_type:
+                profile = Profile.objects.get(user=user_id)
+                if player_type == 'f':
+                    player = FootballPlayer.objects.get(pk=player_id)
+                    print(player, 'player')
+                    profile.football_players.add(player)
+                    profile.save()
+                    return_dict = {'status': True, 'code': 200}
+                else:
+                    player = BasketballPlayer.objects.get(pk=player_id)
+                    profile.basketball_players.add(player)
+                    profile.save()
+                    return_dict = {'status': True, 'code': 200}
+        else:
+            return_dict = {'status': False, 'code': 404}
+        return HttpResponse(json.dumps(return_dict))

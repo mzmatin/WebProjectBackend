@@ -114,9 +114,7 @@ class MembersList extends React.Component {
                         })
                     }}>
                         <Fab variant="extended" aria-label="Delete" className={classes.fab} color={"primary"}
-                             onClick={() => {
-                                 alert("دنبال شد:)")
-                             }}>
+                             onClick={this.props.addTofavorite}>
                             <AddIcon/>
                             دنبال
                         </Fab>

@@ -28,7 +28,7 @@ class Members extends React.Component {
                 <div>
                     <MembersList members={this.state.showMembers.concat(this.state.staffs)} club={this.props.teamInformation['name']}
                                  logo={this.props.teamInformation['url']} sport={this.props.teamInformation['type']}
-                                 handlePost={this.handlePost}/>
+                                 handlePost={this.handlePost} addTofavorite={this.props.addTofavorite}/>
                 </div>
             );
         } else {

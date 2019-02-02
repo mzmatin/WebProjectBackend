@@ -321,3 +321,9 @@ class NewsSummarySerializer(serializers.ModelSerializer):
     @staticmethod
     def get_rel_url(obj):
         return '/news/' + str(obj.pk)
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = '__all__'

@@ -268,6 +268,7 @@ class News(models.Model):
     likes = models.IntegerField(default=0)
     dislikes = models.IntegerField(default=0)
     seen = models.IntegerField(default=0)
+    related_news = models.ManyToManyField('self', blank=True)
 
     def __str__(self):
         return self.title
@@ -316,6 +317,10 @@ class Reply(models.Model):
 class Profile(models.Model):
     avatar = models.ImageField(upload_to='user_images/')
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+    teams = models.ManyToManyField(Team)
+    football_players = models.ManyToManyField(FootballPlayer)
+    basketball_players = models.ManyToManyField(BasketballPlayer)
 
     def __str__(self):
         return self.user.username
+

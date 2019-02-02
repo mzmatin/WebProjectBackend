@@ -18,6 +18,8 @@ import SignUp from "./pages/signup/SignUpPage";
 import SignInPage from "./pages/signin/SignInPage";
 import SignUpResultPage from "./pages/signup/SignUpResultPage";
 import LeaguePage from "./pages/league/LeaguePage";
+import {Favorite} from "@material-ui/icons";
+import FavoritePage from "./pages/favorite/FavoritePage";
 
 const generateClassName = createGenerateClassName({
     dangerouslyUseGlobalCSS: false,
@@ -74,6 +76,7 @@ class Container extends React.Component{
                                            render={(routeProps) => (<SignInPage {...routeProps} onLogIn={this.loggedIn} />)}/>
                                     <Route path={'/signupres'} component={SignUpResultPage}/>
                                     <Route path={'/player/:id'} component={PlayerPage}/>
+                                    <Route path={'/favorite'} component={FavoritePage}/>
                                 </Switch>
 
                         </div>

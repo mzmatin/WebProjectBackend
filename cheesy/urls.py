@@ -22,6 +22,7 @@ router.register(r'comment', CommentViewSet)
 router.register(r'add-comment', AddCommentViewSet)
 router.register(r'related-news', RelatedNewsViewSet)
 router.register(r'summary-news', NewsSummaryViewSet)
+router.register(r'favorite', ProfileViewSet)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.

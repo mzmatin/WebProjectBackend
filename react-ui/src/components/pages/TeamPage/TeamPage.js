@@ -33,6 +33,7 @@ class TeamPage extends React.Component {
             matches: null,
             relatedNews: null,
             opponentName: '',
+            user: null,
         };
         this.id = props.match.params.id;
     }
@@ -79,11 +80,10 @@ class TeamPage extends React.Component {
 
     render() {
         const {classes} = this.props;
-        const newsList = this.getRelatedTeamNews(this.id);
         if (this.state.teamInformation !== null && this.state.matches !== null && this.state.relatedNews !== null) {
             return (
                 <div className={classes.teamPageContainer}>
-                    <Members teamCode={this.id} teamInformation={this.state.teamInformation}/>
+                    <Members teamCode={this.id} teamInformation={this.state.teamInformation} addTofavorite={this.addTofavorite}/>
                     <div className={classes.matchNewsContainer}>
                         <div style={{marginLeft: '20px'}}>
                             <Input
@@ -145,7 +145,44 @@ class TeamPage extends React.Component {
         this.getTeamInformation();
         this.getTeamMatches();
         this.getRelatedNews();
+        this.getUser();
     }
+
+    getUser = () => {
+        if (localStorage.getItem('token'))
+            fetch('http://localhost:8000/api/current_user/', {
+                headers: {
+                    Authorization: `JWT ${localStorage.getItem('token')}`
+                }
+            })
+                .then(res => res.json())
+                .then(json => {
+                    console.log(json, 'user found');
+                    this.setState({user: json});
+                });
+    };
+
+    addTofavorite = () => {
+        if (localStorage.getItem('token')) {
+            console.log(this.id, 'team_id');
+            console.log(this.state.user.pk, 'user_id');
+            fetch('http://localhost:8000/api/favorite/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `JWT ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify({
+                    team: this.id,
+                    user: this.state.user.pk,
+                })
+            })
+                .then(res => res.json())
+                .then(json => {
+                    console.log(json);
+                });
+        }
+    };
 
     getTeamMatches() {
         let thisComp = this;

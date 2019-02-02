@@ -21,6 +21,8 @@ class MainPageMatches extends React.Component {
         this.state = {
             value: 0,
             allMatches: null,
+            user: null,
+            favoriteMatches: [],
         }
     }
 
@@ -35,7 +37,22 @@ class MainPageMatches extends React.Component {
 
     componentDidMount() {
         this.getAllMatches();
+        this.getUser();
     }
+
+    getUser = () => {
+        if (localStorage.getItem('token'))
+            fetch('http://localhost:8000/api/current_user/', {
+                headers: {
+                    Authorization: `JWT ${localStorage.getItem('token')}`
+                }
+            })
+                .then(res => res.json())
+                .then(json => {
+                    console.log(json, 'user found');
+                    this.setState({user: json}, this.getFavoriteMatches);
+                });
+    };
 
     getAllMatches() {
         let thisComp = this;
@@ -58,6 +75,29 @@ class MainPageMatches extends React.Component {
         }).catch(function (error) {
             console.log('error', error)
         });
+    }
+
+    getFavoriteMatches = () => {
+        if (localStorage.getItem('token') && this.state.user !== null) {
+            let thisComp = this;
+            let endpoint = '/api/match-tile/?user=' + this.state.user.pk;
+            console.log(endpoint, 'endpoint');
+            let lookupOptions = {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            };
+            fetch(endpoint, lookupOptions)
+                .then(function (response) {
+                    return response.json()
+                }).then(function (responseData) {
+                    thisComp.setState({favoriteMatches: responseData});
+            }).catch(function (error) {
+                console.log('error', error)
+            });
+        }
     }
 
 
@@ -86,7 +126,7 @@ class MainPageMatches extends React.Component {
                         index={this.state.value}
                         onChangeIndex={this.handleChangeIndex}
                     >
-                        <MatchesList matches={matches_list_fav} height={'auto'}/>
+                        <MatchesList matches={this.state.favoriteMatches} height={'auto'}/>
                         <MatchesList matches={this.state.allMatches} height={'auto'}/>
                     </SwipeableViews>
                 </div>

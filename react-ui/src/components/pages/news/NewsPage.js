@@ -132,6 +132,7 @@ class NewsPage extends React.Component {
         this.state = {
             news: null,
             newsComments: null,
+            relatedNews: null,
         };
         this.id = props.match.params.id;
     }
@@ -169,6 +170,25 @@ class NewsPage extends React.Component {
             });
             console.log(this.state.news, "dfk")
             console.log(this.state.newsComments, "dfk")
+        }).catch(function (error) {
+            console.log('error', error)
+        });
+        endpoint = '/api/related-news/?news=' + this.id.toString();
+        lookupOptions = {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        };
+        fetch(endpoint, lookupOptions)
+            .then((response) => {
+                return response.json()
+            }).then((responseData) => {
+            console.log(responseData);
+            this.setState({
+                relatedNews: responseData,
+            });
         }).catch(function (error) {
             console.log('error', error)
         });
@@ -213,13 +233,13 @@ class NewsPage extends React.Component {
     render() {
         const {classes} = this.props;
         const newsList = this.getNews2();
-        if (this.state.news !== null) {
+        if (this.state.news !== null && this.state.relatedNews !== null) {
             return (
                 <div className={classes.root}>
                     <NewsMain newsComments={this.state.newsComments} news={this.state.news} id={this.id}
                               userAvatar={'https://pickaface.net/gallery/avatar/unr_sample_161118_2054_ynlrg.png'}/>
                     <RTL>
-                        <Grid listItems={newsList} listTitle={"اخبار مرتبط"} width={'auto'} columns={2}/>
+                        <Grid listItems={this.state.relatedNews} listTitle={"اخبار مرتبط"} width={'auto'} columns={2}/>
                     </RTL>
                 </div>
             );

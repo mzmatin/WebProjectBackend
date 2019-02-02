@@ -16,7 +16,12 @@ class MainPageNewsContainer extends React.Component {
 
     getNews() {
         let thisComp = this;
-        let endpoint = '/api/summary-news/'
+        let endpoint = '';
+        if (this.props.title === 'soccer')
+            endpoint = '/api/summary-news/?sport=f';
+        else
+            endpoint = '/api/summary-news/?sport=b';
+
         let lookupOptions = {
             method: 'GET',
             headers: {
