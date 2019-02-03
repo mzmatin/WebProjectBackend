@@ -23,6 +23,7 @@ router.register(r'add-comment', AddCommentViewSet)
 router.register(r'related-news', RelatedNewsViewSet)
 router.register(r'summary-news', NewsSummaryViewSet)
 router.register(r'favorite', ProfileViewSet)
+router.register(r'match', MatchViewSet)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
@@ -33,6 +34,9 @@ urlpatterns = [
     path('current_user/', views.current_user),
     path('users/', views.UserList.as_view()),
     path('send_mail/', views.SendMail.as_view()),
+    path('send_forget_mail/', views.SendForgetMail.as_view()),
+    path('auth_forget_mail/', views.AuthForgetMail.as_view()),
+    path('change-pass/', views.ChangePass.as_view()),
     path('auth_mail/', views.AuthMail.as_view()),
     # url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]

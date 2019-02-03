@@ -6,14 +6,7 @@ from django.db import models
 
 # Create your models here.
 
-
-class UnAuthUser(models.Model):
-    userName = models.CharField(max_length=30)
-    password = models.CharField(max_length=40)
-    email = models.CharField(max_length=100)
-    token = models.CharField(max_length=30)
-
-
+# __________________________________________ League ________________________________________ #
 class League(models.Model):
     picture_link = models.URLField()
     name = models.CharField(max_length=30)
@@ -25,6 +18,7 @@ class League(models.Model):
         return self.name + " " + str(self.season_pre) + '-' + str(self.season_post)
 
 
+# __________________________________________ Team ________________________________________ #
 class Team(models.Model):
     avatar = models.ImageField(upload_to='team_images/')
     name = models.CharField(max_length=30)
@@ -59,6 +53,7 @@ class TeamStat(models.Model):
         return self.team.name + "-" + str(self.league)
 
 
+# __________________________________________ Player ________________________________________ #
 class Player(models.Model):
     avatar = models.ImageField(upload_to='player_images/')
     name = models.CharField(max_length=30)
@@ -142,6 +137,7 @@ class BasketballPlayerStat(models.Model):
                + str(self.league.season_post)
 
 
+# __________________________________________ Match ________________________________________ #
 class Match(models.Model):
     date = models.DateTimeField()
     stadium = models.CharField(max_length=30)
@@ -151,6 +147,11 @@ class Match(models.Model):
     home = models.ForeignKey(Team, on_delete=models.CASCADE, related_name="home")
     away = models.ForeignKey(Team, on_delete=models.CASCADE, related_name="away")
     league = models.ForeignKey(League, on_delete=models.CASCADE)
+    TYPE_CHOICES = (
+        ('f', 'football'),
+        ('b', 'basketball'),
+    )
+    type = models.CharField(max_length=1, choices=TYPE_CHOICES, default='football')
 
     def __str__(self):
         return self.home.name + ":" + str(self.home_score) + "-" + self.away.name + ':' + str(self.away_score)
@@ -168,6 +169,11 @@ class Event(models.Model):
     first_player = models.CharField(max_length=30)
     second_player = models.CharField(max_length=30, null=True)
     match = models.ForeignKey(Match, on_delete=models.CASCADE)
+    SIDE_CHOICES = (
+        ('h', 'home'),
+        ('a', 'away'),
+    )
+    side = models.CharField(max_length=1, choices=SIDE_CHOICES)
 
     class Meta:
         abstract = True
@@ -199,17 +205,17 @@ class BasketballEvent(Event):
 
 
 class FootballStat(models.Model):
-    corners = models.IntegerField()
-    fouls = models.IntegerField()
-    goals = models.IntegerField()
-    possession = models.FloatField()
-    shots = models.IntegerField()
-    shots_on_target = models.IntegerField()
-    passes = models.IntegerField()
-    pass_accuracy = models.FloatField()
-    yellow_cards = models.IntegerField()
-    red_cards = models.IntegerField()
-    offsides = models.IntegerField()
+    corners = models.CharField(max_length=10)
+    fouls = models.CharField(max_length=10)
+    goals = models.CharField(max_length=10)
+    possession = models.CharField(max_length=10)
+    shots = models.CharField(max_length=10)
+    shots_on_target = models.CharField(max_length=10)
+    passes = models.CharField(max_length=10)
+    pass_accuracy = models.CharField(max_length=10)
+    yellow_cards = models.CharField(max_length=10)
+    red_cards = models.CharField(max_length=10)
+    offsides = models.CharField(max_length=10)
     WHEN_CHOICES = (
         ('f', 'first-half'),
         ('s', 'second-half'),
@@ -220,12 +226,12 @@ class FootballStat(models.Model):
 
 
 class BasketballStat(models.Model):
-    scores = models.IntegerField()
-    triple_points = models.IntegerField()
-    double_points = models.IntegerField()
-    fouls = models.IntegerField()
-    penalty_fouls = models.IntegerField()
-    rebounds = models.IntegerField()
+    scores = models.CharField(max_length=10)
+    triple_points = models.CharField(max_length=10)
+    double_points = models.CharField(max_length=10)
+    fouls = models.CharField(max_length=10)
+    penalty_fouls = models.CharField(max_length=10)
+    rebounds = models.CharField(max_length=10)
     WHEN_CHOICES = (
         ('fi', 'first'),
         ('se', 'second'),
@@ -234,6 +240,33 @@ class BasketballStat(models.Model):
     )
     when = models.CharField(max_length=2, choices=WHEN_CHOICES)
     match = models.ForeignKey(Match, on_delete=models.CASCADE)
+
+
+class MatchFootballPlayerStat(models.Model):
+    goals = models.IntegerField()
+    assists = models.IntegerField()
+    fouls = models.IntegerField()
+    passes = models.IntegerField()
+    sub = models.BooleanField()
+    sub_in = models.BooleanField(default=False)
+    sub_time = models.IntegerField(default=0)
+    player = models.ForeignKey(FootballPlayer, on_delete=models.CASCADE)
+    match = models.ForeignKey(Match, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.player.name + "'s stat in " + str(self.match)
+
+
+class MatchBasketballPlayerStat(models.Model):
+    scores = models.IntegerField()
+    triple_points = models.IntegerField()
+    double_points = models.IntegerField()
+    rebounds = models.IntegerField()
+    player = models.ForeignKey(BasketballPlayer, on_delete=models.CASCADE)
+    match = models.ForeignKey(Match, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.player.name + "'s stat in " + str(self.match)
 
 
 class MatchSummarySnippet(models.Model):
@@ -250,10 +283,11 @@ class Media(models.Model):
     )
     type = models.CharField(max_length=1, choices=TYPE_CHOICES)
     title = models.CharField(max_length=50)
-    media_link = models.URLField()
+    media_link = models.CharField(max_length=100000)
     match = models.ForeignKey(Match, on_delete=models.CASCADE)
 
 
+# __________________________________________ News ________________________________________ #
 class News(models.Model):
     title = models.CharField(max_length=50)
     TYPE_CHOICES = (
@@ -314,6 +348,26 @@ class Reply(models.Model):
         return self.user.username + '-' + str(self.pk) + '-' + self.text
 
 
+# __________________________________________ User ________________________________________ #
+class UnAuthUser(models.Model):
+    userName = models.CharField(max_length=30)
+    password = models.CharField(max_length=40)
+    email = models.CharField(max_length=100)
+    token = models.CharField(max_length=30)
+
+
+class ForgetUser(models.Model):
+    userName = models.CharField(max_length=30)
+    email = models.CharField(max_length=100)
+    token = models.CharField(max_length=30)
+
+
+class AuthForgetUser(models.Model):
+    userName = models.CharField(max_length=30)
+    email = models.CharField(max_length=100)
+    token = models.CharField(max_length=30)
+
+
 class Profile(models.Model):
     avatar = models.ImageField(upload_to='user_images/')
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
@@ -323,4 +377,3 @@ class Profile(models.Model):
 
     def __str__(self):
         return self.user.username
-

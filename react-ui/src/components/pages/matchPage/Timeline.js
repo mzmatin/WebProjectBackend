@@ -52,7 +52,7 @@ class Timeline extends React.Component {
                         {homeEvents}
                     </div>
                     <div>
-                        <img src={this.props.sport === 'فوبال' ? timeline : basketTimeline} style={{width: '100%'}}/>
+                        <img src={this.props.sport === 'f' ? timeline : basketTimeline} style={{width: '100%'}}/>
                     </div>
                     <div className={classes.teamContainer}>
                         {awayEvents}

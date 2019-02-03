@@ -61,12 +61,11 @@ const getSampleComment = () => {
 const getSampleMatch = () => {
     return (
         {
-            "type": "فوتبال",
+            "type": "football",
             "homePic": 'http://pngimg.com/uploads/fcb_logo/fcb_logo_PNG4.png', "homeName": "بارسلونا",
             "awayPic": 'http://pluspng.com/img-png/chelsea-png-chelsea-fc-1024.png', 'awayName': 'چلسی',
             "homeScore": "2", "awayScore": "1",
             "subtitle" : "نیوکمپ بارسلونا ",
-            "status" : "پایان بازی",
             "homeEvents": getSampleEvents(),
             "awayEvents": getSampleEvents(),
             "statFields": getSampleStatFields(),
@@ -409,6 +408,14 @@ const styles = theme => ({
 
 class MatchPage extends React.Component {
 
+    constructor(props) {
+        super(props);
+        this.state = {
+            match: null,
+        };
+        this.id = props.match.params.id;
+    }
+
     getNews = () => {
         return [
             {"text": "پله: مارادونا همه چیز داشت، مسی نه ",
@@ -438,26 +445,50 @@ class MatchPage extends React.Component {
         ];
     };
 
+    componentDidMount() {
+        let thisComp = this;
+        let endpoint = '/api/match/' + this.id.toString() + '/';
+        let lookupOptions = {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        };
+        fetch(endpoint, lookupOptions)
+            .then((response) => {
+                return response.json()
+            }).then((responseData) => {
+            console.log(responseData);
+            this.setState({
+                match: responseData,
+            });
+            console.log(this.state.match);
+        }).catch(function (error) {
+            console.log('error', error)
+        });
+    }
+
     render() {
         const { classes } = this.props;
         const newsList = this.getNews();
 
         return (
             <div className={classes.root}>
-                <Header match = {getSampleMatch()}/>
-                <Timeline  style = {{alignSelf: 'center'}} sport = {getSampleMatch().type} homeEvents = {getSampleMatch().homeEvents} awayEvents = {getSampleMatch().awayEvents}/>
-                <MainContent match = {getSampleMatch()} />
+                <Header match = {this.state.match}/>
+                <Timeline  style = {{alignSelf: 'center'}} sport = {this.state.match.type} homeEvents = {this.state.match.homeEvents} awayEvents = {this.state.match.awayEvents}/>
+                <MainContent match = {this.state.match} />
                 <Paper style={{marginTop: '16px'}}>
                     <div className={classes.commentsTitleContainer}>
                         <span className={classes.title}>توضیحات لحظه به لحظه</span>
                     </div>
                     <div style={{textAlign: 'justify', padding: '16px'}}>
-                        {getSampleMatch().detail}
+                        {this.state.match.detail}
                     </div>
                 </Paper>
                 <Paper style={{marginTop: '16px'}} className={classes.mediaRoot}>
                     <RTL >
-                        <Grid listItems={newsList} listTitle={"ویدئوهای مربوط به بازی"} width={'auto'} columns={2}/>
+                        <Grid listItems={this.state.match.media} listTitle={"تصاویر و فیلم‌های مربوط به بازی"} width={'auto'} columns={2}/>
                     </RTL>
                     <RTL >
                         <Grid listItems={newsList} listTitle={"اخبار مرتبط"} width={'auto'} columns={2}/>

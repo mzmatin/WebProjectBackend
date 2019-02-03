@@ -77,6 +77,7 @@ class Container extends React.Component{
                                     <Route path={'/signupres'} component={SignUpResultPage}/>
                                     <Route path={'/player/:id'} component={PlayerPage}/>
                                     <Route path={'/favorite'} component={FavoritePage}/>
+                                    <Route path={'/forget-pass'} component={ForgetPage}/>
                                 </Switch>
 
                         </div>

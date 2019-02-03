@@ -47,7 +47,6 @@ class Header extends React.Component {
                     <h2 style={{alignSelf: 'center'}}>{this.props.match.homeName}</h2>
                 </div>
                 <div className={classes.headerMiddle}>
-                    <h5>{this.props.match.status}</h5>
                     <h1>
                         <PersianNumber>{this.props.match.homeScore}</PersianNumber>
                         {" - "}

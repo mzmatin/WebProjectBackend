@@ -78,6 +78,36 @@ class SendMail(APIView):
         return Response("{\"status\":\"success\"}", status=status.HTTP_200_OK)
 
 
+class SendForgetMail(APIView):
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request):
+        userEmail = request.data['userEmail']
+        userName = request.data['username']
+        userVerifyToken = get_random_string(20)
+
+        ForgetUser(
+            userName=userName,
+            email=userEmail,
+            token=userVerifyToken
+        ).save()
+
+        authLink = 'http://localhost:8000/resetpass/?name=' + userName + '&email=' + userEmail + '&token=' + userVerifyToken
+        msg_plain = render_to_string('authMail.txt', {'link': authLink})
+        msg_html = render_to_string('authMail.html', {'link': authLink})
+
+        send_mail(
+            'Cheesy news reset password',
+            msg_plain,
+            settings.EMAIL_HOST_USER,
+            [userEmail],
+            html_message=msg_html,
+            fail_silently=False
+        )
+        return Response("{\"status\":\"success\"}", status=status.HTTP_200_OK)
+
+
+
 class AuthMail(APIView):
     permission_classes = (permissions.AllowAny,)
 
@@ -100,6 +130,61 @@ class AuthMail(APIView):
             else:
                 return Response("{\"success\":false,\"status\":" + str(r.status_code) + "}")
         except UnAuthUser.DoesNotExist:
+            return Response("{\"success\":false}")
+
+
+class AuthForgetMail(APIView):
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request):
+        userName = request.data['name']
+        email = request.data['email']
+        token = get_random_string(20)
+        try:
+            user = ForgetUser.objects.get(
+                userName=userName,
+                email=email,
+                token=request.data['token'],
+            )
+            AuthForgetUser(userName=userName, email=email, token=token)
+            return Response("{\"success\":true,\"token\":" + token + "}")
+        except ForgetUser.DoesNotExist:
+            return Response("{\"success\":false}")
+
+class ChangePass(APIView):
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request):
+        try:
+            user = AuthForgetUser.objects.get(
+                userName=request.data['name'],
+                email=request.data['email'],
+                token=request.data['token'],
+            )
+            theUser = User.objects.get(username=request.data['name'], email=request.data['email'])
+            theUser.password = request.data['pass']
+            theUser.save()
+            return Response("{\"success\":true}")
+        except UnAuthUser.DoesNotExist:
+            return Response("{\"success\":false}")
+
+
+class AuthForgetMail(APIView):
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request):
+        userName = request.data['name']
+        email = request.data['email']
+        token = get_random_string(20)
+        try:
+            user = ForgetUser.objects.get(
+                userName=userName,
+                email=email,
+                token=request.data['token'],
+            )
+            AuthForgetUser(userName=userName, email=email, token=token)
+            return Response("{\"success\":true,\"token\":" + token + "}")
+        except ForgetUser.DoesNotExist:
             return Response("{\"success\":false}")
 
 
@@ -254,6 +339,11 @@ class TeamStatViewSet(viewsets.ModelViewSet):
 class NewsViewSet(viewsets.ModelViewSet):
     queryset = News.objects.all()
     serializer_class = NewsSerializer
+
+
+class MatchViewSet(viewsets.ModelViewSet):
+    queryset = Match.objects.all()
+    serializer_class = MatchPageSerializer
 
 
 class CommentViewSet(viewsets.ModelViewSet):

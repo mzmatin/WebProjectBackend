@@ -54,11 +54,11 @@ class Event extends React.Component {
 
     };
 
-    renderCardIcon = () => {
+    renderCardIcon = (v) => {
         return (
             <FontAwesomeIcon
                 icon="square-full"
-                color={this.props.event.iconColor}
+                color={v}
                 size="1x"
             />
         );
@@ -84,11 +84,11 @@ class Event extends React.Component {
         );
     };
 
-    renderGoalIcon = () => {
+    renderGoalIcon = (v) => {
         return (
             <FontAwesomeIcon
                 icon='futbol'
-                color={this.props.event.ownGoal ? 'red' : 'Green'}
+                color={v}
                 size="1x"
             />
         );
@@ -104,13 +104,13 @@ class Event extends React.Component {
         );
     };
 
-    getCardInfo = () => {
+    getCardInfo = (v) => {
         const { classes } = this.props;
         return (
             <div className={classes.tooltipContainer} style={{display: this.state.showTooltip ? 'flex' : 'none'}}>
                 <div style={{display: 'flex'}}>
                     <div>
-                        {this.renderCardIcon()}
+                        {this.renderCardIcon(v)}
                     </div>
                     <div className={classes.playerName}>
                         {this.props.event.playerName}
@@ -132,7 +132,7 @@ class Event extends React.Component {
                         {this.renderInSubIcon()}
                     </div>
                     <div className={classes.playerName}>
-                        {this.props.event.playerInName}
+                        {this.props.event.playerName}
                     </div>
                     <div>
                         {'\''}<PersianNumber>{this.props.event.time}</PersianNumber>
@@ -143,7 +143,7 @@ class Event extends React.Component {
                         {this.renderOutSubIcon()}
                     </div>
                     <div className={classes.playerName}>
-                        {this.props.event.playerOutName}
+                        {this.props.event.playerName2}
                     </div>
                     <div>
                         {'\''}<PersianNumber>{this.props.event.time}</PersianNumber>
@@ -153,28 +153,28 @@ class Event extends React.Component {
         );
     };
 
-    getGoalInfo = () => {
+    getGoalInfo = (v) => {
         const { classes } = this.props;
         return (
             <div className={classes.goalTooltipContainer} style={{display: this.state.showTooltip ? 'flex' : 'none'}}>
                 <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center'}}>
                     <div style={{display: 'flex'}}>
                         <div>
-                            {this.renderGoalIcon()}
+                            {this.renderGoalIcon(v)}
                         </div>
                         <div className={classes.playerName}>
-                            {this.props.event.playerGoalName}
+                            {this.props.event.playerName}
                         </div>
                     </div>
                     {
-                        this.props.event.hasAssist
+                        !this.props.event.playerName2.isEmpty
                             ?
                             <div style={{display: 'flex'}}>
                                 <div>
                                     {this.renderPassIcon()}
                                 </div>
                                 <div className={classes.playerName}>
-                                    {this.props.event.playerAssistName}
+                                    {this.props.event.playerName2}
                                 </div>
                             </div>
                             :
@@ -207,7 +207,7 @@ class Event extends React.Component {
         };
 
         switch (this.props.event.eventType) {
-            case 'card':
+            case 'rc':
                 return (
                     <div style={eventStyle}>
                         <div
@@ -215,12 +215,25 @@ class Event extends React.Component {
                             onMouseOver={() => {this.setState({showTooltip: true})}}
                             onMouseOut={() => {this.setState({showTooltip: false})}}
                         >
-                            {this.renderCardIcon()}
+                            {this.renderCardIcon('red')}
                         </div>
-                        {this.getCardInfo()}
+                        {this.getCardInfo('red')}
                     </div>
                 );
-            case 'substitution':
+            case 'yc':
+                return (
+                    <div style={eventStyle}>
+                        <div
+                            style={this.getEventIconContainerStyle(this.props.home)}
+                            onMouseOver={() => {this.setState({showTooltip: true})}}
+                            onMouseOut={() => {this.setState({showTooltip: false})}}
+                        >
+                            {this.renderCardIcon('yellow')}
+                        </div>
+                        {this.getCardInfo('yellow')}
+                    </div>
+                );
+            case 's':
                 return (
                     <div style={eventStyle}>
                         <div
@@ -234,7 +247,7 @@ class Event extends React.Component {
                         {this.getSubstitutionInfo()}
                     </div>
                 );
-            case 'goal':
+            case 'g':
                 return (
                     <div style={eventStyle}>
                         <div
@@ -242,9 +255,35 @@ class Event extends React.Component {
                             onMouseOver={() => {this.setState({showTooltip: true})}}
                             onMouseOut={() => {this.setState({showTooltip: false})}}
                         >
-                            {this.renderGoalIcon()}
+                            {this.renderGoalIcon('green')}
                         </div>
-                        {this.getGoalInfo()}
+                        {this.getGoalInfo('green')}
+                    </div>
+                );
+            case 'pm':
+                return (
+                    <div style={eventStyle}>
+                        <div
+                            style={this.getEventIconContainerStyle(this.props.home)}
+                            onMouseOver={() => {this.setState({showTooltip: true})}}
+                            onMouseOut={() => {this.setState({showTooltip: false})}}
+                        >
+                            {this.renderGoalIcon('red')}
+                        </div>
+                        {this.getGoalInfo('red')}
+                    </div>
+                );
+            case 'gp':
+                return (
+                    <div style={eventStyle}>
+                        <div
+                            style={this.getEventIconContainerStyle(this.props.home)}
+                            onMouseOver={() => {this.setState({showTooltip: true})}}
+                            onMouseOut={() => {this.setState({showTooltip: false})}}
+                        >
+                            {this.renderGoalIcon('yellow')}
+                        </div>
+                        {this.getGoalInfo('yellow')}
                     </div>
                 );
         }

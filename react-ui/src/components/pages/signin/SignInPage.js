@@ -110,6 +110,9 @@ class SignInPage extends React.Component {
                                 <Button onClick={this.handleLogin} className={classes.button}>
                                 {'ورود'}
                                 </Button>
+                                <Button component={Link} to {{pathname:'/forget-pass'}} className={classes.button}>
+                                {'فراموشی رمز عبور'}
+                                </Button>
                             </div>)
                         :
                             this.state.status

@@ -119,6 +119,301 @@ class StaffSerializer(serializers.ModelSerializer):
         model = Staff
         fields = ('url', 'name', 'position', 'pk')
 
+class MediaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Media
+        fields = ('media_link', 'type', 'title', 'pk')
+
+
+class MatchPageSerializer(serializers.ModelSerializer):
+    homePic = serializers.CharField(source='home.avatar')
+    awayPic = serializers.CharField(source='away.avatar')
+    homeName = serializers.CharField(source='home.name')
+    awayName = serializers.CharField(source='away.name')
+    homeScore = serializers.SerializerMethodField()
+    awayScore = serializers.SerializerMethodField()
+    subtitle = serializers.CharField(source='stadium')
+    homeEvents = serializers.SerializerMethodField()
+    awayEvents = serializers.SerializerMethodField()
+    statFields = serializers.SerializerMethodField()
+    homePlayers = serializers.SerializerMethodField()
+    awayPlayers = serializers.SerializerMethodField()
+    detail = serializers.SerializerMethodField()
+    media = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Match
+        fields = ('type', 'media', 'homePic', 'awayPic', 'homeName', 'awayName', 'homeScore', 'awayScore', 'subtitle', 'homeEvents', 'awayEvents', 'statFields', 'homePlayers', 'awayPlayers', 'detail')
+
+    @staticmethod
+    def get_homeScore(obj):
+        return str(obj.home_score)
+
+    @staticmethod
+    def get_awayScore(obj):
+        return str(obj.away_score)
+
+    def get_detail(self, obj):
+        items = []
+        for item in list(MatchSummarySnippet.objects.filter(match=obj.pk)):
+            items.append(str(item.time) + '\n' + item.title + '\n' + item.text)
+        return '\n\n\n'.join(items)
+
+    def get_media(self, obj):
+        items = []
+        for item in list(Media.objects.filter(match=obj.pk)):
+            items.append(MediaSerializer(item).data)
+        return items
+
+    def get_homePlayers(self, obj):
+        players = []
+        if obj.type == 'f':
+            for item in list(FootballPlayer.objects.filter(team=obj.home.pk)):
+                stat = MatchFootballPlayerStat.objects.get(player=item.pk, match=obj.pk)
+                players.append({
+                    'playerStats': list([
+                        {
+                            'name': 'گل',
+                            'value': stat.goals,
+                        },
+                        {
+                            'name': 'پاس گل ',
+                            'value': stat.assists,
+                        },
+                        {
+                            'name': 'خطا',
+                            'value': stat.fouls,
+                        },
+                        {
+                            'name': 'پاس',
+                            'value': stat.passes,
+                        },
+                    ]),
+                    'playerName': item.name,
+                    'subTime': stat.sub_time,
+                    'hasBeenSubed': stat.sub,
+                    "subIn": stat.sub_in,
+                })
+        else:
+            for item in list(BasketballPlayer.objects.filter(team=obj.home.pk)):
+                stat = MatchBasketballPlayerStat.objects.get(player=item.pk, match=obj.pk)
+                players.append({
+                    'playerStats': list([
+                        {
+                            'name': 'امتیاز',
+                            'value': stat.scores,
+                        },
+                        {
+                            'name': 'پرتاب سه‌امتیازی',
+                            'value': stat.triple_points,
+                        },
+                        {
+                            'name': 'پرتاب دوامتیازی',
+                            'value': stat.double_points,
+                        },
+                        {
+                            'name': 'ریباند',
+                            'value': stat.rebounds,
+                        },
+                    ]),
+                    'playerName': item.name,
+                    'subTime': stat.sub_time,
+                    'hasBeenSubed': False,
+                    "subIn": stat.sub_in,
+                })
+        return players
+
+    def get_awayPlayers(self, obj):
+        players = []
+        if obj.type == 'f':
+            for item in list(FootballPlayer.objects.filter(team=obj.away.pk)):
+                stat = MatchFootballPlayerStat.objects.get(player=item.pk, match=obj.pk)
+                players.append({
+                    'playerStats': list([
+                        {
+                            'name': 'گل',
+                            'value': stat.goals,
+                        },
+                        {
+                            'name': 'پاس گل ',
+                            'value': stat.assists,
+                        },
+                        {
+                            'name': 'خطا',
+                            'value': stat.fouls,
+                        },
+                        {
+                            'name': 'پاس',
+                            'value': stat.passes,
+                        },
+                    ]),
+                    'playerName': item.name,
+                    'subTime': stat.sub_time,
+                    'hasBeenSubed': stat.sub,
+                    "subIn": stat.sub_in,
+                })
+        else:
+            for item in list(BasketballPlayer.objects.filter(team=obj.away.pk)):
+                stat = MatchBasketballPlayerStat.objects.get(player=item.pk, match=obj.pk)
+                players.append({
+                    'playerStats': list([
+                        {
+                            'name': 'امتیاز',
+                            'value': stat.scores,
+                        },
+                        {
+                            'name': 'پرتاب سه‌امتیازی',
+                            'value': stat.triple_points,
+                        },
+                        {
+                            'name': 'پرتاب دوامتیازی',
+                            'value': stat.double_points,
+                        },
+                        {
+                            'name': 'ریباند',
+                            'value': stat.rebounds,
+                        },
+                    ]),
+                    'playerName': item.name,
+                    'subTime': stat.sub_time,
+                    'hasBeenSubed': False,
+                    "subIn": stat.sub_in,
+                })
+        return players
+
+    def get_homeEvents(self, obj):
+        events = []
+        if obj.type == 'f':
+            for item in list(FootballEvent.objects.filter(match=obj.pk, side='h')):
+                events.append({
+                    'overtime': item.in_extra,
+                    'eventType': item.type,
+                    'time': item.time,
+                    'playerName': item.first_player,
+                    "playerName2": item.second_player,
+                })
+        else:
+            for item in list(BasketballEvent.objects.filter(match=obj.pk, side='h')):
+                events.append({
+                    'eventType': item.type,
+                    'time': item.time,
+                    'playerName': item.first_player,
+                    "playerName2": item.second_player,
+                })
+        return events
+
+    def get_awayEvents(self, obj):
+        events = []
+        if obj.type == 'f':
+            for item in list(FootballEvent.objects.filter(match=obj.pk, side='a')):
+                events.append({
+                    'overtime': item.in_extra,
+                    'eventType': item.type,
+                    'time': item.time,
+                    'playerName': item.first_player,
+                    "playerName2": item.second_player,
+                })
+        else:
+            for item in list(BasketballEvent.objects.filter(match=obj.pk, side='a')):
+                events.append({
+                    'eventType': item.type,
+                    'time': item.time,
+                    'playerName': item.first_player,
+                    "playerName2": item.second_player,
+                })
+        return events
+
+    def get_statFields(self, obj):
+        stats = []
+        if obj.type == 'f':
+            stats.append({
+                'name': 'کرنر',
+                'homeValue': FootballStat.objects.get(match=obj.pk).corners.split('_')[0],
+                'awayValue': FootballStat.objects.get(match=obj.pk).corners.split('_')[1]
+            })
+            stats.append({
+                'name': 'خطا',
+                'homeValue': FootballStat.objects.get(match=obj.pk).fouls.split('_')[0],
+                'awayValue': FootballStat.objects.get(match=obj.pk).fouls.split('_')[1]
+            })
+            stats.append({
+                'name': 'گل',
+                'homeValue': FootballStat.objects.get(match=obj.pk).goals.split('_')[0],
+                'awayValue': FootballStat.objects.get(match=obj.pk).goals.split('_')[1]
+            })
+            stats.append({
+                'name': 'درصد مالکیت',
+                'homeValue': FootballStat.objects.get(match=obj.pk).possession.split('_')[0],
+                'awayValue': FootballStat.objects.get(match=obj.pk).possession.split('_')[1]
+            })
+            stats.append({
+                'name': 'شوت',
+                'homeValue': FootballStat.objects.get(match=obj.pk).shots.split('_')[0],
+                'awayValue': FootballStat.objects.get(match=obj.pk).shots.split('_')[1]
+            })
+            stats.append({
+                'name': 'شوت در چارچوب',
+                'homeValue': FootballStat.objects.get(match=obj.pk).shots_on_target.split('_')[0],
+                'awayValue': FootballStat.objects.get(match=obj.pk).shots_on_target.split('_')[1]
+            })
+            stats.append({
+                'name': 'پاس',
+                'homeValue': FootballStat.objects.get(match=obj.pk).passes.split('_')[0],
+                'awayValue': FootballStat.objects.get(match=obj.pk).passes.split('_')[1]
+            })
+            stats.append({
+                'name': 'درصد دقت پاس',
+                'homeValue': FootballStat.objects.get(match=obj.pk).pass_accuracy.split('_')[0],
+                'awayValue': FootballStat.objects.get(match=obj.pk).pass_accuracy.split('_')[1]
+            })
+            stats.append({
+                'name': 'کارت زرد',
+                'homeValue': FootballStat.objects.get(match=obj.pk).yellow_cards.split('_')[0],
+                'awayValue': FootballStat.objects.get(match=obj.pk).yellow_cards.split('_')[1]
+            })
+            stats.append({
+                'name': 'کارت قرمز',
+                'homeValue': FootballStat.objects.get(match=obj.pk).red_cards.split('_')[0],
+                'awayValue': FootballStat.objects.get(match=obj.pk).red_cards.split('_')[1]
+            })
+            stats.append({
+                'name': 'آفساید',
+                'homeValue': FootballStat.objects.get(match=obj.pk).offsides.split('_')[0],
+                'awayValue': FootballStat.objects.get(match=obj.pk).offsides.split('_')[1]
+            })
+        else:
+            stats.append({
+                'name': 'نتیجه',
+                'homeValue': FootballStat.objects.get(match=obj.pk).scores.split('_')[0],
+                'awayValue': FootballStat.objects.get(match=obj.pk).scores.split('_')[1]
+            })
+            stats.append({
+                'name': 'خطا',
+                'homeValue': FootballStat.objects.get(match=obj.pk).fouls.split('_')[0],
+                'awayValue': FootballStat.objects.get(match=obj.pk).fouls.split('_')[1]
+            })
+            stats.append({
+                'name': 'خطای پنالتی',
+                'homeValue': FootballStat.objects.get(match=obj.pk).penalty_fouls.split('_')[0],
+                'awayValue': FootballStat.objects.get(match=obj.pk).penalty_fouls.split('_')[1]
+            })
+            stats.append({
+                'name': 'شوت دو امتیازی',
+                'homeValue': FootballStat.objects.get(match=obj.pk).double_points.split('_')[0],
+                'awayValue': FootballStat.objects.get(match=obj.pk).double_points.split('_')[1]
+            })
+            stats.append({
+                'name': 'شوت سه امتیازی',
+                'homeValue': FootballStat.objects.get(match=obj.pk).triple_points.split('_')[0],
+                'awayValue': FootballStat.objects.get(match=obj.pk).triple_points.split('_')[1]
+            })
+            stats.append({
+                'name': 'ریباند',
+                'homeValue': FootballStat.objects.get(match=obj.pk).rebounds.split('_')[0],
+                'awayValue': FootballStat.objects.get(match=obj.pk).rebounds.split('_')[1]
+            })
+        return stats
+
 
 class MatchSerializer(serializers.ModelSerializer):
     home_team_name = serializers.CharField(source='home.name')
